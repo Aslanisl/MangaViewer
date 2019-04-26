@@ -80,7 +80,7 @@ class MangaChanSource : IMangaSource {
             val textSecond = textFirst.split("]")[0]
             val pagesUrl = textSecond.split(",")
             pagesUrl.forEach {
-                val page = Page(it, 1, it)
+                val page = Page(it, 1, it.replace("\"", ""))
                 pages.add(page)
             }
             return UIData.success(pages)
