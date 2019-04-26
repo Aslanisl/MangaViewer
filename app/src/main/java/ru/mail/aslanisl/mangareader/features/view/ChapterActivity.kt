@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import kotlinx.android.synthetic.main.activity_chapter.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.mail.aslanisl.mangareader.BaseActivity
-import ru.mail.aslanisl.mangareader.R.layout
+import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.dataModel.Page
 import ru.mail.aslanisl.mangareader.dataModel.base.UIData
 
@@ -36,7 +39,7 @@ class ChapterActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layout.activity_chapter)
+        setContentView(R.layout.activity_chapter)
 
         val chapterId = intent?.getStringExtra(KEY_CHAPTER)
         if (chapterId.isNullOrEmpty()) {
@@ -44,7 +47,9 @@ class ChapterActivity : BaseActivity() {
             return
         }
 
-        chapterImages.layoutManager = LinearLayoutManager(this)
+        chapterImages.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(chapterImages)
         chapterImages.adapter = adapter
 
         viewModel.loadPages(chapterId).observe(this, observer)

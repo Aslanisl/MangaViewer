@@ -78,9 +78,9 @@ class MangaChanSource : IMangaSource {
         try {
             val textFirst = result.body!!.substringAfter("\"fullimg\":[")
             val textSecond = textFirst.split("]")[0]
-            val pagesUrl = textSecond.split(",")
+            val pagesUrl = textSecond.replace("\"", "").split(",")
             pagesUrl.forEach {
-                val page = Page(it, 1, it.replace("\"", ""))
+                val page = Page(it, 1, it)
                 pages.add(page)
             }
             return UIData.success(pages)
@@ -91,5 +91,4 @@ class MangaChanSource : IMangaSource {
             return UIData.errorMessage(e.message)
         }
     }
-
 }
