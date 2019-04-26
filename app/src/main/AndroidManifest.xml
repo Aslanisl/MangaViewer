@@ -14,9 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ChapterActivity"></activity>
-        <activity android:name=".MangaDetailsActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".features.search.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -24,6 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".features.view.ChapterActivity" />
+        <activity android:name=".features.details.MangaDetailsActivity" />
     </application>
 
 </manifest>
