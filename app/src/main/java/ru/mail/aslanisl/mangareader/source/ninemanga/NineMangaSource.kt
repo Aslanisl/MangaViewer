@@ -7,10 +7,7 @@ import ru.mail.aslanisl.mangareader.dataModel.Manga
 import ru.mail.aslanisl.mangareader.dataModel.Page
 import ru.mail.aslanisl.mangareader.dataModel.base.UIData
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
-import ru.mail.aslanisl.mangareader.network.ApiService
 import ru.mail.aslanisl.mangareader.source.IMangaSource
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val BASE_URL = "http://ru.ninemanga.com/"
 private const val BASE_URL_WITHOUT_LINE = "http://ru.ninemanga.com"
@@ -19,7 +16,7 @@ private const val BASE_URL_PHOTO = "https://ruimg.taadd.com"
 // If load diff when have parse block from site
 private const val MAX_COUNT_LOAD_PAGES = 10
 
-class NineMangaSource @Inject constructor(private val apiBuilder: ApiBuilder) : IMangaSource {
+class NineMangaSource constructor(private val apiBuilder: ApiBuilder) : IMangaSource {
 
     private val api by lazy { apiBuilder.createRetrofit(BASE_URL).create(NineMangaApi::class.java) }
 

@@ -6,18 +6,16 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_manga_details.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.mail.aslanisl.mangareader.BaseActivity
 import ru.mail.aslanisl.mangareader.R.layout
 import ru.mail.aslanisl.mangareader.dataModel.Chapter
 import ru.mail.aslanisl.mangareader.dataModel.base.UIData
-import ru.mail.aslanisl.mangareader.di.component.AppComponent
 import ru.mail.aslanisl.mangareader.features.view.ChapterActivity
 
 private const val KEY_MANGA = "KEY_MANGA"
 
 class MangaDetailsActivity : BaseActivity() {
-
-    override fun injectDI(appComponent: AppComponent) = appComponent.inject(this)
 
     companion object {
         fun openManga(context: Context, id: String) {
@@ -28,7 +26,7 @@ class MangaDetailsActivity : BaseActivity() {
     }
 
     private val adapter by lazy { ChapterAdapter() }
-    private val viewModel by lazy { initViewModel<DetailsViewModel>() }
+    private val viewModel: DetailsViewModel by viewModel()
     private val observer by lazy {
         Observer<UIData<List<Chapter>>> {
             it ?: return@Observer

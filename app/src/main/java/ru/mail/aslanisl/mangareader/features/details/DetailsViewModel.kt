@@ -7,9 +7,8 @@ import ru.mail.aslanisl.mangareader.dataModel.Chapter
 import ru.mail.aslanisl.mangareader.dataModel.base.UIData
 import ru.mail.aslanisl.mangareader.getLoadingLiveData
 import ru.mail.aslanisl.mangareader.source.IMangaSource
-import javax.inject.Inject
 
-class DetailsViewModel @Inject constructor(private val source: IMangaSource): BaseViewModel() {
+class DetailsViewModel constructor(private val source: IMangaSource): BaseViewModel() {
 
     fun loadChapters(idManga: String): LiveData<UIData<List<Chapter>>> {
         val liveData = getLoadingLiveData<List<Chapter>>()
