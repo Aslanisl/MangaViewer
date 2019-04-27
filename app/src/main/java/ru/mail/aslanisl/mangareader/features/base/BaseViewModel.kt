@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader
+package ru.mail.aslanisl.mangareader.features.base
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope

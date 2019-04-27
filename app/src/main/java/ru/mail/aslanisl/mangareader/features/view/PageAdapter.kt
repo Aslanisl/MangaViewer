@@ -1,20 +1,22 @@
 package ru.mail.aslanisl.mangareader.features.view
 
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.github.chrisbanes.photoview.PhotoView
 import ru.mail.aslanisl.mangareader.R.id
 import ru.mail.aslanisl.mangareader.R.layout
-import ru.mail.aslanisl.mangareader.dataModel.Page
+import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 
     private val images = mutableListOf<Page>()
+
+    var tapListener: (() -> Unit?)? = null
 
     fun updatePages(imagesList: List<Page>) {
         images.clear()
@@ -34,7 +36,13 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
     override fun getItemCount() = images.size
 
     inner class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val imageView = itemView.findViewById<ImageView>(id.image)
+        private val imageView = itemView.findViewById<PhotoView>(id.image)
+
+        init {
+            imageView.setOnPhotoTapListener { _, _, _ ->
+                tapListener?.invoke()
+            }
+        }
 
         fun init(image: Page) {
             Glide.with(imageView).load(image.imageUrl).into(imageView)

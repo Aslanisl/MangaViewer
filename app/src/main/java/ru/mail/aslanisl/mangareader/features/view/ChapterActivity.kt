@@ -1,21 +1,28 @@
 package ru.mail.aslanisl.mangareader.features.view
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.animation.Animation
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import kotlinx.android.synthetic.main.activity_chapter.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.mail.aslanisl.mangareader.BaseActivity
 import ru.mail.aslanisl.mangareader.R
-import ru.mail.aslanisl.mangareader.dataModel.Page
-import ru.mail.aslanisl.mangareader.dataModel.base.UIData
+import ru.mail.aslanisl.mangareader.data.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Page
+import ru.mail.aslanisl.mangareader.features.base.BaseActivity
+import ru.mail.aslanisl.mangareader.getDrawableCompat
+import ru.mail.aslanisl.mangareader.gone
+import ru.mail.aslanisl.mangareader.isVisible
+import ru.mail.aslanisl.mangareader.show
 
 private const val KEY_CHAPTER = "KEY_CHAPTER"
+private const val UI_ANIMATION_DURATION = 300L
 
 class ChapterActivity : BaseActivity() {
 
@@ -37,6 +44,8 @@ class ChapterActivity : BaseActivity() {
         }
     }
 
+    private var pageCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chapter)
@@ -47,12 +56,82 @@ class ChapterActivity : BaseActivity() {
             return
         }
 
-        chapterImages.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        initViews()
+
+        viewModel.loadPages(chapterId).observe(this, observer)
+    }
+
+    private fun initViews() {
+        chapterToolbar.gone()
+        chapterToolbar.navigationIcon = getDrawableCompat(R.drawable.ic_left_arrow)
+        chapterToolbar.setNavigationOnClickListener { onBackPressed() }
+
+        val lm = object : LinearLayoutManager(this, RecyclerView.HORIZONTAL, false) {
+            // Load more 2 items
+            override fun getExtraLayoutSpace(state: RecyclerView.State?): Int {
+                return 2
+            }
+        }
+        chapterImages.layoutManager = lm
+        chapterImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    return
+                }
+                val firstVisible = lm.findFirstCompletelyVisibleItemPosition()
+                if (firstVisible == RecyclerView.NO_POSITION) {
+                    return
+                }
+                updateToolbarTitle(firstVisible + 1)
+            }
+        })
+
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(chapterImages)
         chapterImages.adapter = adapter
 
-        viewModel.loadPages(chapterId).observe(this, observer)
+        adapter.tapListener = { toggleUI() }
+
+        previous.setOnClickListener {
+            val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
+            if (currentPosition <= 0) return@setOnClickListener
+            chapterImages.smoothScrollToPosition(currentPosition - 1)
+        }
+
+        next.setOnClickListener {
+            val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
+            if (currentPosition >= adapter.itemCount) return@setOnClickListener
+            chapterImages.smoothScrollToPosition(currentPosition + 1)
+        }
+    }
+
+    private var animating = false
+
+    private fun toggleUI() {
+        if (animating) return
+        if (chapterToolbar.isVisible()) {
+            chapterToolbar
+                .animate()
+                .translationY(-chapterToolbar.height.toFloat())
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        animating = false
+                        chapterToolbar.gone()
+                    }
+                })
+                .duration = UI_ANIMATION_DURATION
+        } else {
+            chapterToolbar.show()
+            chapterToolbar
+                .animate()
+                .translationY(0f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        animating = false
+                    }
+                })
+                .duration = UI_ANIMATION_DURATION
+        }
     }
 
     private fun initData(data: UIData<List<Page>>) {
@@ -61,5 +140,11 @@ class ChapterActivity : BaseActivity() {
 
     private fun showPages(pages: List<Page>) {
         adapter.updatePages(pages)
+        pageCount = pages.size
+        updateToolbarTitle(1)
+    }
+
+    private fun updateToolbarTitle(currentPosition: Int) {
+        chapterToolbar.title = "$currentPosition/$pageCount"
     }
 }

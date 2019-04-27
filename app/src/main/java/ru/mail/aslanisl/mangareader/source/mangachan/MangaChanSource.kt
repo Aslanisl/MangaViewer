@@ -1,11 +1,10 @@
 package ru.mail.aslanisl.mangareader.source.mangachan
 
-import android.util.Log
 import org.jsoup.Jsoup
-import ru.mail.aslanisl.mangareader.dataModel.Chapter
-import ru.mail.aslanisl.mangareader.dataModel.Manga
-import ru.mail.aslanisl.mangareader.dataModel.Page
-import ru.mail.aslanisl.mangareader.dataModel.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Chapter
+import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.data.model.Page
+import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 import java.lang.Exception
@@ -78,9 +77,12 @@ class MangaChanSource : IMangaSource {
         try {
             val textFirst = result.body!!.substringAfter("\"fullimg\":[")
             val textSecond = textFirst.split("]")[0]
-            val pagesUrl = textSecond.replace("\"", "").split(",")
-            pagesUrl.forEach {
-                val page = Page(it, 1, it)
+            val pagesUrl = textSecond
+                .replace("\"", "")
+                .split(",")
+                .filterNot { it.isEmpty() }
+            pagesUrl.forEachIndexed { index, url ->
+                val page = Page(url, index + 1, url)
                 pages.add(page)
             }
             return UIData.success(pages)

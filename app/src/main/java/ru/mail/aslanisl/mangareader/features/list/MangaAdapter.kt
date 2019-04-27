@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader.features.search
+package ru.mail.aslanisl.mangareader.features.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import ru.mail.aslanisl.mangareader.R.id
 import ru.mail.aslanisl.mangareader.R.layout
-import ru.mail.aslanisl.mangareader.dataModel.Manga
-import ru.mail.aslanisl.mangareader.features.search.MangaAdapter.MangaViewHolder
+import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.features.list.MangaAdapter.MangaViewHolder
 
 class MangaAdapter : RecyclerView.Adapter<MangaViewHolder>() {
 

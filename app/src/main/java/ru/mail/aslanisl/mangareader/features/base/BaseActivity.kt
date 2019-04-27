@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader
+package ru.mail.aslanisl.mangareader.features.base
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

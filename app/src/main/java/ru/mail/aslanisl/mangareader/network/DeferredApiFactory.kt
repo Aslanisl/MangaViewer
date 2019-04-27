@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
 import retrofit2.Retrofit
-import ru.mail.aslanisl.mangareader.dataModel.base.ApiResponse
+import ru.mail.aslanisl.mangareader.data.base.ApiResponse
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 

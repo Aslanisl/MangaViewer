@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader.dataModel.base
+package ru.mail.aslanisl.mangareader.data.base
 
 import retrofit2.Response
 import retrofit2.Retrofit

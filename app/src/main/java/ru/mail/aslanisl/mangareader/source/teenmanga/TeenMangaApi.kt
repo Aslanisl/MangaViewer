@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import ru.mail.aslanisl.mangareader.dataModel.base.ApiResponse
+import ru.mail.aslanisl.mangareader.data.base.ApiResponse
 
 interface TeenMangaApi {
 

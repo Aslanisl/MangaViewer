@@ -1,8 +1,8 @@
-package ru.mail.aslanisl.mangareader.dataModel.base
+package ru.mail.aslanisl.mangareader.data.base
 
-import ru.mail.aslanisl.mangareader.dataModel.base.UIDataStatus.FAILURE
-import ru.mail.aslanisl.mangareader.dataModel.base.UIDataStatus.LOADING
-import ru.mail.aslanisl.mangareader.dataModel.base.UIDataStatus.SUCCESS
+import ru.mail.aslanisl.mangareader.data.base.UIDataStatus.FAILURE
+import ru.mail.aslanisl.mangareader.data.base.UIDataStatus.LOADING
+import ru.mail.aslanisl.mangareader.data.base.UIDataStatus.SUCCESS
 
 class UIData<out T> private constructor(
     val status: UIDataStatus,

@@ -2,9 +2,9 @@ package ru.mail.aslanisl.mangareader.features.search
 
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.launch
-import ru.mail.aslanisl.mangareader.BaseViewModel
-import ru.mail.aslanisl.mangareader.dataModel.Manga
-import ru.mail.aslanisl.mangareader.dataModel.base.UIData
+import ru.mail.aslanisl.mangareader.features.base.BaseViewModel
+import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.getLoadingLiveData
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 

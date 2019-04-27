@@ -2,10 +2,10 @@ package ru.mail.aslanisl.mangareader.source.ninemanga
 
 import org.json.JSONArray
 import org.jsoup.Jsoup
-import ru.mail.aslanisl.mangareader.dataModel.Chapter
-import ru.mail.aslanisl.mangareader.dataModel.Manga
-import ru.mail.aslanisl.mangareader.dataModel.Page
-import ru.mail.aslanisl.mangareader.dataModel.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Chapter
+import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.data.model.Page
+import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 

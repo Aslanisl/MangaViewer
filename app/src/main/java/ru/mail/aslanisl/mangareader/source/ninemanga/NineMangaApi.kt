@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
-import ru.mail.aslanisl.mangareader.dataModel.base.ApiResponse
+import ru.mail.aslanisl.mangareader.data.base.ApiResponse
 
 interface NineMangaApi {
 

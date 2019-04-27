@@ -7,10 +7,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_manga_details.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.mail.aslanisl.mangareader.BaseActivity
+import ru.mail.aslanisl.mangareader.features.base.BaseActivity
 import ru.mail.aslanisl.mangareader.R.layout
-import ru.mail.aslanisl.mangareader.dataModel.Chapter
-import ru.mail.aslanisl.mangareader.dataModel.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Chapter
+import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.features.view.ChapterActivity
 
 private const val KEY_MANGA = "KEY_MANGA"
@@ -46,7 +46,10 @@ class MangaDetailsActivity : BaseActivity() {
 
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter
-        adapter.listener = { ChapterActivity.openChapter(this, it.id) }
+        adapter.listener = {
+            ChapterActivity.openChapter(this, it.id)
+            viewModel.setChapterReaded(mangaId, it.id)
+        }
 
         viewModel.loadChapters(mangaId).observe(this, observer)
     }

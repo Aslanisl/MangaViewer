@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader.dataModel
+package ru.mail.aslanisl.mangareader.data.model
 
 data class Manga(
     val id: String,

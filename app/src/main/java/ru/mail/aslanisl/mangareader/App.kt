@@ -6,6 +6,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import ru.mail.aslanisl.mangareader.db.Database
+import ru.mail.aslanisl.mangareader.db.DatabaseBuilder
 import ru.mail.aslanisl.mangareader.features.details.DetailsViewModel
 import ru.mail.aslanisl.mangareader.features.search.MainViewModel
 import ru.mail.aslanisl.mangareader.features.view.ChapterViewModel
@@ -24,8 +26,10 @@ class App : Application() {
     val appModule: Module = module {
         single { ApiBuilder() }
         single { MangaSourceFactory.getSource(get()) }
+        single { DatabaseBuilder.build(get()) }
+        single { (get() as Database).chapterReadedDao() }
         viewModel { MainViewModel(get()) }
-        viewModel { DetailsViewModel(get()) }
+        viewModel { DetailsViewModel(get(), get()) }
         viewModel { ChapterViewModel(get()) }
     }
 

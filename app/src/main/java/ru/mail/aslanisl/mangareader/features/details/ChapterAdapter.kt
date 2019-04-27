@@ -1,5 +1,6 @@
 package ru.mail.aslanisl.mangareader.features.details
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.mail.aslanisl.mangareader.R.id
 import ru.mail.aslanisl.mangareader.R.layout
-import ru.mail.aslanisl.mangareader.dataModel.Chapter
+import ru.mail.aslanisl.mangareader.data.model.Chapter
 import ru.mail.aslanisl.mangareader.features.details.ChapterAdapter.ChapterViewHolder
 
 class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
@@ -41,6 +42,8 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
         init {
             itemView.setOnClickListener {
                 val chapter = currentChapter ?: return@setOnClickListener
+                chapter.readed = true
+                notifyItemChanged(adapterPosition)
                 listener?.invoke(chapter)
             }
         }
@@ -48,6 +51,7 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
         fun init(chapter: Chapter) {
             currentChapter = chapter
             name.text = chapter.title
+            name.setTextColor(if (chapter.readed) Color.GRAY else Color.BLACK)
         }
     }
 }
