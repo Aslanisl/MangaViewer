@@ -1,0 +1,3 @@
+keystore.password = MangaTop
+alias = MangaViewer
+password = Hey201k
