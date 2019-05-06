@@ -7,11 +7,11 @@ import androidx.room.Query
 import ru.mail.aslanisl.mangareader.data.db.ChapterRead
 
 @Dao
-interface ChapterReadedDao {
+interface ChapterReadDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun setChapterReaded(chapterRead: ChapterRead)
+    fun setChapterRead(chapterRead: ChapterRead)
 
     @Query("SELECT * FROM chapter_read WHERE mangaId = :mangaId")
-    fun getReadedChapter(mangaId: String): List<ChapterRead>
+    fun getReadChapter(mangaId: String): List<ChapterRead>
 }

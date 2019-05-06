@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.Animation
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -100,7 +101,7 @@ class ChapterActivity : BaseActivity() {
 
         next.setOnClickListener {
             val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-            if (currentPosition >= adapter.itemCount) return@setOnClickListener
+            if (currentPosition >= adapter.itemCount || currentPosition < 0) return@setOnClickListener
             chapterImages.smoothScrollToPosition(currentPosition + 1)
         }
     }

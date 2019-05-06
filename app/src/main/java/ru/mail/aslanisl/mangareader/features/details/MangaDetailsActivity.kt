@@ -48,7 +48,7 @@ class MangaDetailsActivity : BaseActivity() {
         chapterList.adapter = adapter
         adapter.listener = {
             ChapterActivity.openChapter(this, it.id)
-            viewModel.setChapterReaded(mangaId, it.id)
+            viewModel.setChapterRead(mangaId, it.id)
         }
 
         viewModel.loadChapters(mangaId).observe(this, observer)

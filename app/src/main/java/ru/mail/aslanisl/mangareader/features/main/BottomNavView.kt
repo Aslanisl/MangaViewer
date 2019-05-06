@@ -19,27 +19,23 @@ class BottomNavView
     private val selectColor = context.getColorCompat(R.color.bottomSelectColor)
     private val unselectColor = context.getColorCompat(R.color.bottomUnselectColor)
 
-    enum class Item {
-        NONE,
-        SEARCH,
-        GENRE
-    }
+    var listener: ((MainItem) -> Unit)? = null
 
-    var listener: ((Item) -> Unit)? = null
-
-    var currentItem = Item.NONE
+    var currentItem = MainItem.NONE
 
     init {
         inflate(context, R.layout.custom_nav_view, this)
-        search.setOnClickListener { selectItem(Item.SEARCH) }
-        genre.setOnClickListener { selectItem(Item.GENRE) }
+        search.setOnClickListener { selectItem(MainItem.SEARCH) }
+        genre.setOnClickListener { selectItem(MainItem.GENRE) }
+        history.setOnClickListener { selectItem(MainItem.HISTORY) }
     }
 
-    fun selectItem(item: Item) {
+    fun selectItem(item: MainItem) {
         if (currentItem == item) return
         listener?.invoke(item)
-        updateColorItem(search, item == Item.SEARCH)
-        updateColorItem(genre, item == Item.GENRE)
+        updateColorItem(search, item == MainItem.SEARCH)
+        updateColorItem(genre, item == MainItem.GENRE)
+        updateColorItem(history, item == MainItem.HISTORY)
     }
 
     private fun updateColorItem(view: ImageView, select: Boolean) {

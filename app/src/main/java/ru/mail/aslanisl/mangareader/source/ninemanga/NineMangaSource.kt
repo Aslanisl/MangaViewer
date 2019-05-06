@@ -6,6 +6,7 @@ import ru.mail.aslanisl.mangareader.data.model.Chapter
 import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.data.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Genre
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 
@@ -17,6 +18,21 @@ private const val BASE_URL_PHOTO = "https://ruimg.taadd.com"
 private const val MAX_COUNT_LOAD_PAGES = 10
 
 class NineMangaSource constructor(private val apiBuilder: ApiBuilder) : IMangaSource {
+    override fun genrePagingCount(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun loadMangaGenre(genreId: String, offset: Int): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun loadMangaGenre(genreId: String): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun loadGenres(): UIData<List<Genre>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val api by lazy { apiBuilder.createRetrofit(BASE_URL).create(NineMangaApi::class.java) }
 

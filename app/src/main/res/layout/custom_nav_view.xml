@@ -20,4 +20,13 @@
         android:padding="12dp"
         android:src="@drawable/icon_genre" />
 
+    <ImageView
+        android:id="@+id/history"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:src="@drawable/icon_genre" />
+
+
 </LinearLayout>

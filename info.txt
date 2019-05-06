@@ -1,3 +1,7 @@
 keystore.password = MangaTop
 alias = MangaViewer
 password = Hey201k
+
+keystore.password = ViewerManga
+alias = MangaViewer
+password = Hey2k19

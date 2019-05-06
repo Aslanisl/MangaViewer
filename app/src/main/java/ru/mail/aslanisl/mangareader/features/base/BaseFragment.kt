@@ -9,5 +9,4 @@ abstract class BaseFragment: Fragment() {
         get() {
             return this@BaseFragment.context ?: throw IllegalStateException("Context must not be null")
         }
-
 }

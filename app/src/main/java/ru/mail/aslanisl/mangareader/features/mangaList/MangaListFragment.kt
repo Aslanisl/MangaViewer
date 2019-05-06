@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader.features.list
+package ru.mail.aslanisl.mangareader.features.mangaList
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,12 +8,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_manga_list.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.mail.aslanisl.mangareader.R.layout
-import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.data.base.UIData
+import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.features.base.BaseFragment
 import ru.mail.aslanisl.mangareader.features.details.MangaDetailsActivity
-import ru.mail.aslanisl.mangareader.features.search.MainViewModel
 
 class MangaListFragment : BaseFragment() {
 
@@ -36,7 +35,7 @@ class MangaListFragment : BaseFragment() {
     private val mangaAdapter by lazy { MangaAdapter() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(layout.fragment_manga_list, container, false)
+        return inflater.inflate(R.layout.fragment_manga_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,7 +46,10 @@ class MangaListFragment : BaseFragment() {
         mangasList.layoutManager = LinearLayoutManager(contextNotNull)
         mangasList.adapter = mangaAdapter
 
-        mangaAdapter.listener = { mangaInfo -> MangaDetailsActivity.openManga(contextNotNull, mangaInfo.id) }
+        mangaAdapter.listener = { mangaInfo ->
+            viewModel.setMangaRead(mangaInfo)
+            MangaDetailsActivity.openManga(contextNotNull, mangaInfo.id)
+        }
     }
 
     fun search(term: String) {
@@ -59,6 +61,6 @@ class MangaListFragment : BaseFragment() {
     }
 
     private fun updateMangas(mangases: List<Manga>) {
-        mangaAdapter.updateMangas(mangases)
+        mangaAdapter.updateItems(mangases)
     }
 }

@@ -1,4 +1,4 @@
-package ru.mail.aslanisl.mangareader.features.list
+package ru.mail.aslanisl.mangareader.features.mangaList
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,30 +11,25 @@ import com.bumptech.glide.Glide
 import ru.mail.aslanisl.mangareader.R.id
 import ru.mail.aslanisl.mangareader.R.layout
 import ru.mail.aslanisl.mangareader.data.model.Manga
-import ru.mail.aslanisl.mangareader.features.list.MangaAdapter.MangaViewHolder
+import ru.mail.aslanisl.mangareader.features.base.loadingAdapter.LoadingRecyclerAdapter
+import ru.mail.aslanisl.mangareader.features.mangaList.MangaAdapter.MangaViewHolder
 
-class MangaAdapter : RecyclerView.Adapter<MangaViewHolder>() {
+class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
 
-    private val mangasList = mutableListOf<Manga>()
-
-    var listener: ((Manga) -> Unit)? = null
-
-    fun updateMangas(mangases: List<Manga>) {
-        mangasList.clear()
-        mangasList.addAll(mangases)
-        notifyDataSetChanged()
+    init {
+        setShowLoading(false)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, position: Int): MangaViewHolder {
+    override fun onCreateItemViewHolder(parent: ViewGroup, viewType: Int): MangaViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(layout.item_manga, parent, false)
         return MangaViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MangaViewHolder, position: Int) {
-        holder.init(mangasList[position])
+    override fun onBindItemViewHolder(holder: MangaViewHolder, position: Int) {
+        holder.init(items[position])
     }
 
-    override fun getItemCount() = mangasList.size
+    var listener: ((Manga) -> Unit)? = null
 
     inner class MangaViewHolder(itemView: View) : ViewHolder(itemView) {
         private val photo = itemView.findViewById<ImageView>(id.mangaPhoto)
