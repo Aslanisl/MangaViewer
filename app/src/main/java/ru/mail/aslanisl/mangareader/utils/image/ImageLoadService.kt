@@ -44,24 +44,29 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     private fun makeRequest() {
         val request = currentRequest?.build() ?: return
-        request.target ?: return
         launch {
-            
+            val cache = loadFromCache(request.url)
+            if (cache != null) {
+                request.target?.setImageBitmap(cache)
+                val bitmap = loadFromNet(request.url)
+                if (bitmap != null && cache.byteCount != bitmap.byteCount) {
+                    request.target?.setImageBitmap(bitmap)
+                }
+            }
         }
     }
 
     @WorkerThread
-    private suspend fun checkAndLoad(url: String) {
-        val exist = cacheService.isBitmapExist(url)
-
+    private fun loadFromCache(src: String): Bitmap? {
+        val exist = cacheService.isBitmapExist(src)
+        if (exist) {
+            return cacheService.loadImage(src)
+        }
+        return null
     }
 
-    private suspend fun loadFromCache(src: String): Bitmap? {
-        val bitmap = cacheService.loadImage(src)
-
-    }
-
-    private suspend fun loadFromNet(src: String): Bitmap? {
+    @WorkerThread
+    private fun loadFromNet(src: String): Bitmap? {
         return try {
             val url = URL(src)
             val connection = url.openConnection()
