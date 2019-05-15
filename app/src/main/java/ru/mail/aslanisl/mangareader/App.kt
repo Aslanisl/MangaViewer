@@ -16,6 +16,7 @@ import ru.mail.aslanisl.mangareader.features.mangaList.MainViewModel
 import ru.mail.aslanisl.mangareader.features.view.ChapterViewModel
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.MangaSourceFactory
+import ru.mail.aslanisl.mangareader.utils.image.ImageCacheService
 import java.util.Calendar
 import java.util.Date
 
@@ -37,6 +38,7 @@ class App : Application() {
         viewModel { ChapterViewModel(get()) }
         viewModel { GenreViewModel(get(), get()) }
         viewModel { HistoryViewModel(get(), get()) }
+        single { ImageCacheService(get()) }
     }
 
     override fun onCreate() {
