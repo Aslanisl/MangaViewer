@@ -3,16 +3,17 @@ package ru.mail.aslanisl.mangareader.features.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoView
-import ru.mail.aslanisl.mangareader.R.id
-import ru.mail.aslanisl.mangareader.R.layout
+import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
-import ru.mail.aslanisl.mangareader.utils.GlideApp
+import ru.mail.aslanisl.mangareader.gone
+import ru.mail.aslanisl.mangareader.show
 import ru.mail.aslanisl.mangareader.utils.image.ImageLoadService
+import ru.mail.aslanisl.mangareader.utils.image.NetProgressListener
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 
@@ -27,7 +28,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ImageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(layout.item_image, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
         return ImageViewHolder(view)
     }
 
@@ -38,7 +39,31 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
     override fun getItemCount() = images.size
 
     inner class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val imageView = itemView.findViewById<PhotoView>(id.image)
+        private val imageView = itemView.findViewById<PhotoView>(R.id.image)
+        private val progressView = itemView.findViewById<ProgressBar>(R.id.progress)
+
+        private val progressListener by lazy {
+            object : NetProgressListener {
+                override fun onStart() {
+                    imageView.gone()
+                    progressView.show()
+                }
+
+                override fun progressChanged(progress: Float) {
+                    progressView.progress = progress.toInt()
+                }
+
+                override fun onFinish() {
+                    imageView.show()
+                    progressView.gone()
+                }
+
+                override fun onCancel() {
+                    imageView.show()
+                    progressView.gone()
+                }
+            }
+        }
 
         init {
             imageView.setOnPhotoTapListener { _, _, _ ->
@@ -47,8 +72,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         }
 
         fun init(image: Page) {
-//            ImageLoadService.loadUrl(image.imageUrl).into(imageView)
-            GlideApp.with(imageView).load(image.imageUrl).into(imageView)
+            ImageLoadService.loadUrl(image.imageUrl, imageView, progressListener)
         }
     }
 }
