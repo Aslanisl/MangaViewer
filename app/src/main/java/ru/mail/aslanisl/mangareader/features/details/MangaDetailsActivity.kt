@@ -1,5 +1,6 @@
 package ru.mail.aslanisl.mangareader.features.details
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +15,7 @@ import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.features.view.ChapterActivity
 
 private const val KEY_MANGA = "KEY_MANGA"
+private const val REQUEST_CODE_CHAPTER = 1
 
 class MangaDetailsActivity : BaseActivity() {
 
@@ -34,6 +36,8 @@ class MangaDetailsActivity : BaseActivity() {
         }
     }
 
+    private var selectedMangaPosition: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_manga_details)
@@ -46,9 +50,10 @@ class MangaDetailsActivity : BaseActivity() {
 
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter
-        adapter.listener = {
-            ChapterActivity.openChapter(this, it.id)
-            viewModel.setChapterRead(mangaId, it.id)
+        adapter.listener = { chapter, position ->
+            ChapterActivity.openChapter(this, chapter.id, REQUEST_CODE_CHAPTER)
+            viewModel.setChapterRead(mangaId, chapter.id)
+            selectedMangaPosition = position
         }
 
         viewModel.loadChapters(mangaId).observe(this, observer)
@@ -60,5 +65,12 @@ class MangaDetailsActivity : BaseActivity() {
 
     private fun initChapters(chapters: List<Chapter>) {
         adapter.updateChapter(chapters)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_CHAPTER && resultCode == Activity.RESULT_OK) {
+            adapter.selectPosition(selectedMangaPosition + 1)
+        }
     }
 }

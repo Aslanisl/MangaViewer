@@ -1,9 +1,7 @@
 package ru.mail.aslanisl.mangareader.utils.image
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.view.View
 import android.widget.ImageView
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.CoroutineScope
@@ -12,7 +10,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.lang.Exception
 import java.net.URL
 import kotlin.coroutines.CoroutineContext
 
@@ -33,13 +30,14 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     private var currentRequest: ImageRequest.Builder? = null
 
-    fun loadUrl(url: String): ImageRequest.Builder {
+    fun loadUrl(url: String): ImageLoadService {
         currentRequest = ImageRequest.Builder().url(url)
-        return currentRequest!!
+        return this
     }
 
     fun into(target: ImageView) {
         currentRequest?.into(target)
+        makeRequest()
     }
 
     private fun makeRequest() {
@@ -47,11 +45,11 @@ object ImageLoadService : KoinComponent, CoroutineScope {
         launch {
             val cache = loadFromCache(request.url)
             if (cache != null) {
-                request.target?.setImageBitmap(cache)
-                val bitmap = loadFromNet(request.url)
-                if (bitmap != null && cache.byteCount != bitmap.byteCount) {
-                    request.target?.setImageBitmap(bitmap)
-                }
+                request.target?.post { request.target.setImageBitmap(cache) }
+            }
+            val bitmap = loadFromNet(request.url)
+            if (bitmap != null) {
+                request.target?.post { request.target.setImageBitmap(bitmap) }
             }
         }
     }
@@ -72,6 +70,7 @@ object ImageLoadService : KoinComponent, CoroutineScope {
             val connection = url.openConnection()
             connection.doInput = true
             connection.connect()
+            connection.connectTimeout = 60 * 1000
             val inputStream = connection.getInputStream()
             val bitmap = BitmapFactory.decodeStream(inputStream)
             cacheService.saveBitmap(src, bitmap)

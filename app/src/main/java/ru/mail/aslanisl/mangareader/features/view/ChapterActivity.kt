@@ -2,6 +2,7 @@ package ru.mail.aslanisl.mangareader.features.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,10 +39,10 @@ class ChapterActivity : BaseActivity() {
     }
 
     companion object {
-        fun openChapter(context: Context, chapterId: String) {
-            val intent = Intent(context, ChapterActivity::class.java)
+        fun openChapter(activity: BaseActivity, chapterId: String, requestCode: Int) {
+            val intent = Intent(activity, ChapterActivity::class.java)
             intent.putExtra(KEY_CHAPTER, chapterId)
-            context.startActivity(intent)
+            activity.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -101,7 +102,12 @@ class ChapterActivity : BaseActivity() {
 
         next.setOnClickListener {
             val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-            if (currentPosition >= adapter.itemCount || currentPosition < 0) return@setOnClickListener
+            if (currentPosition < 0) return@setOnClickListener
+            if (currentPosition + 1 >= adapter.itemCount) {
+                setResult(Activity.RESULT_OK)
+                finish()
+                return@setOnClickListener
+            }
             chapterImages.smoothScrollToPosition(currentPosition + 1)
         }
     }

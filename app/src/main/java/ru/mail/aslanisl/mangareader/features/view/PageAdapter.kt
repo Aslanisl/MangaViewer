@@ -12,6 +12,7 @@ import ru.mail.aslanisl.mangareader.R.layout
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
 import ru.mail.aslanisl.mangareader.utils.GlideApp
+import ru.mail.aslanisl.mangareader.utils.image.ImageLoadService
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 
@@ -46,6 +47,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         }
 
         fun init(image: Page) {
+//            ImageLoadService.loadUrl(image.imageUrl).into(imageView)
             GlideApp.with(imageView).load(image.imageUrl).into(imageView)
         }
     }

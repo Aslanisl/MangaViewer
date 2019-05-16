@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import com.jakewharton.disklrucache.DiskLruCache
+import java.io.BufferedInputStream
 import java.io.File
 import java.io.IOException
 import java.io.ObjectOutputStream
@@ -12,8 +13,11 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 private const val APP_VERSION = 1
+private const val IO_BUFFER_SIZE = 8 * 1024
 private const val MAX_DISK_CACHE_BYTES = 100 * 1024 * 1024L // 100 mb
-private const val COMPRESS_QUALITY = 100
+private const val COMPRESS_QUALITY = 75
+
+private const val INDEX_BITMAP = 0
 
 class ImageCacheService constructor(private val context: Context) {
 
@@ -24,8 +28,9 @@ class ImageCacheService constructor(private val context: Context) {
         val diskCache = openDiskCache()
         try {
             val snapshot = diskCache?.get(key) ?: return null
-            val inputStream = snapshot.getInputStream(0)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = snapshot.getInputStream(INDEX_BITMAP)
+            val buffIn = BufferedInputStream(inputStream, IO_BUFFER_SIZE)
+            val bitmap = BitmapFactory.decodeStream(buffIn)
             inputStream.close()
             return bitmap
         } catch (e: Exception) {
@@ -43,9 +48,9 @@ class ImageCacheService constructor(private val context: Context) {
         val diskCache = openDiskCache()
         try {
             val editor = diskCache?.edit(key) ?: return
-            val objectOutputStream = ObjectOutputStream(editor.newOutputStream(0))
+            val objectOutputStream = editor.newOutputStream(INDEX_BITMAP)
             if (bitmap == null) {
-                objectOutputStream.writeObject(null)
+                ObjectOutputStream(objectOutputStream).writeObject(null)
             } else {
                 bitmap.compress(CompressFormat.WEBP, COMPRESS_QUALITY, objectOutputStream)
             }

@@ -133,6 +133,7 @@ class MangaChanSource : IMangaSource {
                     chapters.add(chapter)
                 }
             }
+            chapters.reverse()
             return UIData.success(chapters)
         } catch (e: Exception) {
             if (chapters.isEmpty().not()) {

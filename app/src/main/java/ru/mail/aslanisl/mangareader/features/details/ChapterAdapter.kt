@@ -16,12 +16,18 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
 
     private val chapters = mutableListOf<Chapter>()
 
-    var listener: ((Chapter) -> Unit)? = null
+    var listener: ((Chapter, Int) -> Unit)? = null
 
     fun updateChapter(chapters: List<Chapter>) {
         this.chapters.clear()
         this.chapters.addAll(chapters)
         notifyDataSetChanged()
+    }
+
+    fun selectPosition(position: Int) {
+        if (position >= chapters.size || position < 0) return
+        val chapter = chapters[position]
+        selectChapter(chapter, position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ChapterViewHolder {
@@ -35,6 +41,12 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
 
     override fun getItemCount() = chapters.size
 
+    private fun selectChapter(chapter: Chapter, position: Int) {
+        chapter.readed = true
+        notifyItemChanged(position)
+        listener?.invoke(chapter, position)
+    }
+
     inner class ChapterViewHolder(itemView: View) : ViewHolder(itemView) {
         private val name = itemView.findViewById<TextView>(id.chapterName)
         private var currentChapter: Chapter? = null
@@ -42,9 +54,7 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
         init {
             itemView.setOnClickListener {
                 val chapter = currentChapter ?: return@setOnClickListener
-                chapter.readed = true
-                notifyItemChanged(adapterPosition)
-                listener?.invoke(chapter)
+                selectChapter(chapter, adapterPosition)
             }
         }
 
