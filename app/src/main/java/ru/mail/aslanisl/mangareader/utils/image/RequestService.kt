@@ -3,6 +3,7 @@ package ru.mail.aslanisl.mangareader.utils.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.Lifecycle
@@ -13,7 +14,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import java.net.URL
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
 private const val PROGRESS_STEP = 5f
@@ -21,7 +24,7 @@ private const val PROGRESS_STEP = 5f
 class RequestService(
     context: Context,
     private val url: String,
-    var target: ImageView?,
+    target: ImageView,
     private var progressListener: NetProgressListener?,
     private val cacheService: ImageCacheService,
     private val parentService: ImageLoadService
@@ -31,6 +34,15 @@ class RequestService(
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.IO
 
+    private var targetView: WeakReference<ImageView> = WeakReference(target)
+
+    val target: ImageView?
+        get() = targetView.get()
+
+    private var cancelNetJob = AtomicBoolean(false)
+    private var cancelSetImage = AtomicBoolean(false)
+    private var cancelProgressListener = AtomicBoolean(false)
+
     init {
         if (context is LifecycleOwner) {
             context.lifecycle.addObserver(this)
@@ -38,14 +50,24 @@ class RequestService(
     }
 
     fun makeRequest() {
+        target?.setImageBitmap(null)
+
         launch {
             val cache = loadFromCache(url)
             if (cache != null) {
-                target?.post { target?.setImageBitmap(cache) }
+                if (cancelSetImage.get().not()) {
+                    target?.post {
+                        if (cancelSetImage.get().not()) target?.setImageBitmap(cache)
+                    }
+                }
             }
             val bitmap = loadFromNet(url, cache == null)
             if (bitmap != null) {
-                target?.post { target?.setImageBitmap(bitmap) }
+                if (cancelSetImage.get().not()) {
+                    target?.post {
+                        if (cancelSetImage.get().not()) target?.setImageBitmap(bitmap)
+                    }
+                }
             }
             finishWork()
         }
@@ -64,8 +86,10 @@ class RequestService(
     private fun loadFromNet(src: String, showLoading: Boolean): Bitmap? {
         return try {
             if (showLoading) {
-                launch(Dispatchers.Main) {
-                    progressListener?.onStart()
+                if (cancelProgressListener.get().not()) {
+                    launch(Dispatchers.Main) {
+                        if (cancelProgressListener.get().not()) progressListener?.onStart()
+                    }
                 }
             }
 
@@ -92,48 +116,65 @@ class RequestService(
                 if (showedProgress + PROGRESS_STEP <= currentProgress) {
                     // Send to main thread
                     if (showLoading) {
-                        launch(Dispatchers.Main) {
-                            progressListener?.progressChanged(currentProgress)
+                        if (cancelProgressListener.get().not()) {
+                            launch(Dispatchers.Main) {
+                                if (cancelProgressListener.get().not()) progressListener?.progressChanged(currentProgress)
+                            }
                         }
                     }
                     showedProgress = currentProgress
+
+                    if (cancelNetJob.get()) {
+                        return null
+                    }
                 }
             }
 
             if (showLoading) {
-                launch(Dispatchers.Main) {
-                    progressListener?.onFinish()
+                if (cancelProgressListener.get().not()) {
+                    launch(Dispatchers.Main) {
+                        if (cancelProgressListener.get().not()) progressListener?.onFinish()
+                    }
                 }
             }
             val bitmap = BitmapFactory.decodeByteArray(array, 0, array.size)
             cacheService.saveBitmap(src, bitmap)
             bitmap
         } catch (e: Exception) {
+            if (cancelProgressListener.get().not()) {
+                launch(Dispatchers.Main) {
+                    if (cancelProgressListener.get().not()) progressListener?.onFailure(e)
+                }
+            }
             e.printStackTrace()
             null
         }
     }
 
     private fun finishWork() {
-        cancelRequest()
-        parentService.removeRequest(this)
+        cancelRequest(false)
     }
 
     fun clearTarget() {
-        synchronized(this) {
-            target = null
-        }
+        cancelSetImage.set(true)
+        targetView.clear()
     }
 
     fun clearProgressListener() {
-        synchronized(this) {
-            progressListener?.onCancel()
-            progressListener = null
-        }
+        cancelProgressListener.set(true)
     }
 
-    fun cancelRequest() {
+    private fun cancelRequest(sendCancel: Boolean = true) {
+        if (sendCancel) {
+            launch(Dispatchers.Main) {
+                if (cancelProgressListener.get().not()) progressListener?.onCancel()
+            }
+        }
+        cancelProgressListener.set(true)
+        cancelSetImage.set(true)
+        cancelNetJob.set(true)
         job.cancel()
+        parentService.removeRequest(this)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)

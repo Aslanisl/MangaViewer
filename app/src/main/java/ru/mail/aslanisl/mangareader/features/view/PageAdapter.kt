@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.github.chrisbanes.photoview.PhotoView
@@ -62,6 +63,10 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
                     imageView.show()
                     progressView.gone()
                 }
+
+                override fun onFailure(e: Exception) {
+                    Toast.makeText(itemView.context, e.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -72,6 +77,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         }
 
         fun init(image: Page) {
+//            GlideApp.with(imageView).load(image.imageUrl).into(imageView)
             ImageLoadService.loadUrl(image.imageUrl, imageView, progressListener)
         }
     }

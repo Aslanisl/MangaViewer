@@ -87,9 +87,9 @@ class ChapterActivity : BaseActivity() {
                 updateToolbarTitle(firstVisible + 1)
             }
         })
-
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(chapterImages)
+//      TODO return
+//        val snapHelper = PagerSnapHelper()
+//        snapHelper.attachToRecyclerView(chapterImages)
         chapterImages.adapter = adapter
 
         adapter.tapListener = { toggleUI() }

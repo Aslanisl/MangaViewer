@@ -35,7 +35,7 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     fun loadUrl(url: String, target: ImageView, progressListener: NetProgressListener? = null) {
         synchronized(requests) {
-            val sameTargetRequest = requests.firstOrNull { it.target?.id == target.id }
+            val sameTargetRequest = requests.firstOrNull { it.target?.hashCode() == target.hashCode() }
             if (sameTargetRequest != null) {
                 sameTargetRequest.clearTarget()
                 sameTargetRequest.clearProgressListener()
