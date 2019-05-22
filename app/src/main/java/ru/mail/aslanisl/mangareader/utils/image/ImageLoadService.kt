@@ -1,12 +1,9 @@
 package ru.mail.aslanisl.mangareader.utils.image
 
-import android.util.Log
 import android.widget.ImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
@@ -19,15 +16,6 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     private val cacheService: ImageCacheService by inject()
     private val requests = mutableListOf<RequestService>()
-
-    init {
-        launch {
-            while (true) {
-                delay(1000L)
-                Log.d("TAGLOGRequests", "Requests ${requests.size}")
-            }
-        }
-    }
 
     fun loadImagesCache(urls: List<String>) {
 
