@@ -16,6 +16,8 @@ import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.features.base.BaseActivity
 import ru.mail.aslanisl.mangareader.features.view.ChapterActivity
 import ru.mail.aslanisl.mangareader.getDrawableCompat
+import ru.mail.aslanisl.mangareader.gone
+import ru.mail.aslanisl.mangareader.show
 import ru.mail.aslanisl.mangareader.toast
 import ru.mail.aslanisl.mangareader.utils.image.ImageLoadService
 
@@ -84,8 +86,11 @@ class MangaDetailsActivity : BaseActivity() {
     private fun initMangaDetails(mangaDetails: MangaDetails) {
         mangaDetailsToolbar.title = mangaDetails.name
         ImageLoadService.loadUrl(mangaDetails.photoUrl, mangaPoster)
+        if (mangaDetails.photoUrl.isNullOrEmpty()) mangaPoster.gone() else mangaPoster.show()
         description.text = mangaDetails.description
+        if (mangaDetails.description.isEmpty()) description.gone() else description.show()
         mangaGenres.text = mangaDetails.genre.joinToString()
+        if (mangaDetails.genre.isEmpty()) mangaGenres.gone() else mangaGenres.show()
         initChapters(mangaDetails.chapters)
     }
 
