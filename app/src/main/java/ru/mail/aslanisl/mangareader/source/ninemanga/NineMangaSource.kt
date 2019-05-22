@@ -7,6 +7,7 @@ import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.data.model.Genre
+import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 
@@ -65,26 +66,30 @@ class NineMangaSource constructor(private val apiBuilder: ApiBuilder) : IMangaSo
         return BASE_URL_PHOTO + url
     }
 
-    override suspend fun loadChapter(idManga: String): UIData<List<Chapter>> {
-        val result = api.load(idManga).await()
-        if (result.isSuccess().not()) {
-            return UIData.errorThrowable(result.throwable)
-        }
-
-        return try {
-            val document = Jsoup.parse(result.body)
-            val elements = document.getElementsByClass("sub_vol_ul")
-            val parsedChars = elements
-                .flatMap { it.children() }
-                .map {
-                    val chapterList = it.getElementsByClass("chapter_list_a")[0]
-                    Chapter(chapterList.attr("href"), chapterList.attr("title"))
-                }
-            UIData.success(parsedChars)
-        } catch (e: Exception) {
-            UIData.errorMessage(e.message)
-        }
+    override suspend fun loadMangaDetails(idManga: String): UIData<MangaDetails> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+//    override suspend fun loadMangaDetails(idManga: String): UIData<List<Chapter>> {
+//        val result = api.load(idManga).await()
+//        if (result.isSuccess().not()) {
+//            return UIData.errorThrowable(result.throwable)
+//        }
+//
+//        return try {
+//            val document = Jsoup.parse(result.body)
+//            val elements = document.getElementsByClass("sub_vol_ul")
+//            val parsedChars = elements
+//                .flatMap { it.children() }
+//                .map {
+//                    val chapterList = it.getElementsByClass("chapter_list_a")[0]
+//                    Chapter(chapterList.attr("href"), chapterList.attr("title"))
+//                }
+//            UIData.success(parsedChars)
+//        } catch (e: Exception) {
+//            UIData.errorMessage(e.message)
+//        }
+//    }
 
     override suspend fun loadPages(idChapter: String): UIData<List<Page>> {
         val result = api.loadChapter(idChapter).await()

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.R.id
-import ru.mail.aslanisl.mangareader.R.layout
 import ru.mail.aslanisl.mangareader.data.model.Chapter
 import ru.mail.aslanisl.mangareader.features.details.ChapterAdapter.ChapterViewHolder
 
@@ -31,7 +31,7 @@ class ChapterAdapter : RecyclerView.Adapter<ChapterViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ChapterViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(layout.item_chapter, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chapter, parent, false)
         return ChapterViewHolder(view)
     }
 

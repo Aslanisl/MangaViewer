@@ -21,12 +21,17 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     }
 
-    fun loadUrl(url: String, target: ImageView, progressListener: NetProgressListener? = null) {
+    fun loadUrl(url: String?, target: ImageView, progressListener: NetProgressListener? = null) {
         synchronized(requests) {
             val sameTargetRequest = requests.firstOrNull { it.target?.hashCode() == target.hashCode() }
             if (sameTargetRequest != null) {
                 sameTargetRequest.clearTarget()
                 sameTargetRequest.clearProgressListener()
+            }
+
+            if (url.isNullOrEmpty()) {
+                target.setImageBitmap(null)
+                return@synchronized
             }
 
             val service = RequestService(target.context, url, target, progressListener, cacheService, this)

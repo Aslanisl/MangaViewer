@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -22,16 +23,19 @@ fun <T> getLoadingLiveData(): MediatorLiveData<UIData<T>> {
 fun Context.getColorCompat(@ColorRes colorRes: Int) = ContextCompat.getColor(this, colorRes)
 
 fun Context.getDrawableCompat(@DrawableRes drawableRes: Int, @ColorInt colorInt: Int? = null): Drawable? {
-    val drawable = try {
-        var temp = ContextCompat.getDrawable(this, drawableRes)
-        if (temp != null) return temp
-        temp = VectorDrawableCompat.create(resources, drawableRes, theme)
-        if (temp != null) return temp
-        AppCompatResources.getDrawable(this, drawableRes)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
+    var drawable: Drawable? = null
+    run {
+        try {
+            drawable = ContextCompat.getDrawable(this, drawableRes)
+            if (drawable != null) return@run
+            drawable = VectorDrawableCompat.create(resources, drawableRes, theme)
+            if (drawable != null) return@run
+            drawable = AppCompatResources.getDrawable(this, drawableRes)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
     colorInt?.let { drawable?.setColorFilter(colorInt, PorterDuff.Mode.MULTIPLY) }
     return drawable
 }
@@ -44,4 +48,8 @@ fun View.gone() {
 
 fun View.show() {
     visibility = View.VISIBLE
+}
+
+fun Context.toast(message: String?, duration: Int = Toast.LENGTH_SHORT) {
+    message?.let { Toast.makeText(this, it, duration).show() }
 }

@@ -1,10 +1,12 @@
 package ru.mail.aslanisl.mangareader.source.mangachan
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.TextNode
 import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.data.model.Chapter
 import ru.mail.aslanisl.mangareader.data.model.Genre
 import ru.mail.aslanisl.mangareader.data.model.Manga
+import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
@@ -115,14 +117,19 @@ class MangaChanSource : IMangaSource {
         }
     }
 
-    override suspend fun loadChapter(idManga: String): UIData<List<Chapter>> {
+    override suspend fun loadMangaDetails(idManga: String): UIData<MangaDetails> {
         val result = api.request(idManga).await()
         if (result.isSuccess().not()) {
             return UIData.errorThrowable(result.throwable)
         }
+        val doc = Jsoup.parse(result.body)
+
         val chapters = mutableListOf<Chapter>()
+        var image: String? = null
+        var name: String = ""
+        var description: String = ""
+        val genres = mutableListOf<String>()
         try {
-            val doc = Jsoup.parse(result.body)
             val tables = doc.getElementsByClass("table_cha")
             tables.forEach { table ->
                 val mangas = table.getElementsByClass("manga2")
@@ -134,10 +141,30 @@ class MangaChanSource : IMangaSource {
                 }
             }
             chapters.reverse()
-            return UIData.success(chapters)
+
+            val mangaImages = doc.getElementById("manga_images")
+            val images = mangaImages.getElementsByTag("img")
+            image = images?.getOrNull(0)?.attr("src")
+
+            val nameElement = doc.getElementsByClass("title_top_a")[0]
+            name = nameElement.wholeText()
+
+            val descriptionElements = doc.getElementById("description")
+            description = descriptionElements.textNodes()[0].wholeText.trim()
+
+            val sideTags = doc.getElementsByClass("sidetag")
+            sideTags.filter { it !is TextNode }.forEach {
+                val genreTitle = it.text().replace("+", "").replace("-", "").trim()
+                if (genreTitle.isNotEmpty()) genres.add(genreTitle)
+            }
+
+            val mangaDetails = MangaDetails(idManga, image, name, description, genres, chapters)
+            return UIData.success(mangaDetails)
         } catch (e: Exception) {
             if (chapters.isEmpty().not()) {
-                return UIData.success(chapters)
+                val mangaDetails = MangaDetails(idManga, image, name, description, genres, chapters)
+
+                return UIData.success(mangaDetails)
             }
             return UIData.errorMessage(e.message)
         }
