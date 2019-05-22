@@ -12,16 +12,30 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" />
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mainToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:titleTextColor="@android:color/black" />
+
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/navView"
+        android:layout_below="@id/mainToolbar"
         tools:context=".features.main.MainActivity" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="4dp"
+        android:layout_below="@id/mainToolbar"
+        android:background="@drawable/shadow_bottom" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
         android:layout_above="@id/navView"
         android:background="@drawable/shadow_top" />
 

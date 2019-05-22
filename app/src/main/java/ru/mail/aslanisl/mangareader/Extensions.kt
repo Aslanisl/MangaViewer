@@ -1,9 +1,13 @@
 package ru.mail.aslanisl.mangareader
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -52,4 +56,24 @@ fun View.show() {
 
 fun Context.toast(message: String?, duration: Int = Toast.LENGTH_SHORT) {
     message?.let { Toast.makeText(this, it, duration).show() }
+}
+
+fun EditText.onDoneClicked(hideKeyboard: Boolean = true, listener: () -> Unit) {
+    this.setOnEditorActionListener { _, actionId, _ ->
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            listener.invoke()
+            if (hideKeyboard) this.hideKeyboard()
+            return@setOnEditorActionListener true
+        }
+        return@setOnEditorActionListener false
+    }
+}
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE)
+        as? InputMethodManager
+
+    this.windowToken?.let {
+        imm?.hideSoftInputFromWindow(it, 0)
+    }
 }

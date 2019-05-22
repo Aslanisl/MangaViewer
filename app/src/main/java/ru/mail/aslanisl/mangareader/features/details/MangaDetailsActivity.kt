@@ -73,7 +73,6 @@ class MangaDetailsActivity : BaseActivity() {
             viewModel.setChapterRead(mangaId, chapter.id)
             selectedMangaPosition = position
         }
-
     }
 
     private fun initData(data: UIData<MangaDetails>) {

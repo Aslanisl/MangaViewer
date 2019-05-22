@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_manga_list.*
@@ -13,6 +14,8 @@ import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.features.base.BaseFragment
 import ru.mail.aslanisl.mangareader.features.details.MangaDetailsActivity
+import ru.mail.aslanisl.mangareader.hideKeyboard
+import ru.mail.aslanisl.mangareader.onDoneClicked
 
 class MangaListFragment : BaseFragment() {
 
@@ -41,7 +44,8 @@ class MangaListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        search.setOnClickListener { search(searchEdit.text.toString()) }
+        search.setOnClickListener { search() }
+        searchEdit.onDoneClicked(false) { search() }
 
         mangasList.layoutManager = LinearLayoutManager(contextNotNull)
         mangasList.adapter = mangaAdapter
@@ -52,7 +56,17 @@ class MangaListFragment : BaseFragment() {
         }
     }
 
+    private fun search() {
+        search(searchEdit.text.toString())
+        searchEdit.clearFocus()
+        searchEdit.hideKeyboard()
+    }
+
     fun search(term: String) {
+        if (term.isEmpty()) {
+            updateMangas(emptyList())
+            return
+        }
         viewModel.search(term).observe(this, observer)
     }
 

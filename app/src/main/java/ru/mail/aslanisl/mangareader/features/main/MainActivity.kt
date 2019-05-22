@@ -28,24 +28,27 @@ class MainActivity : BaseActivity() {
     private fun selectItem(item: MainItem) {
         var fragment: BaseFragment? = null
         var tag: String? = null
+        var title = ""
         when (item) {
             SEARCH -> {
                 fragment = MangaListFragment.newInstance()
                 tag = MangaListFragment.TAG
+                title = getString(R.string.title_search)
             }
 
             GENRE -> {
                 fragment = GenreListFragment.newInstance()
                 tag = GenreListFragment.TAG
+                title = getString(R.string.title_genres)
             }
 
             HISTORY -> {
                 fragment = HistoryMangaFragment.newInstance()
                 tag = HistoryMangaFragment.TAG
+                title = getString(R.string.title_history)
             }
 
-            NONE -> {
-            }
+            NONE -> {}
         }
 
         if (fragment == null) return
@@ -53,6 +56,8 @@ class MainActivity : BaseActivity() {
             .beginTransaction()
             .replace(R.id.container, fragment, tag)
             .commitAllowingStateLoss()
+
+        mainToolbar.title = title
     }
 
     override fun onBackPressed() {
