@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
 private const val PROGRESS_STEP = 5f
+private const val CONNECTION_TIMEOUT = 60 * 1000
 
 class RequestService(
     context: Context,
@@ -105,7 +106,8 @@ class RequestService(
             val connection = url.openConnection()
             connection.doInput = true
             connection.connect()
-            connection.connectTimeout = 60 * 1000
+            connection.connectTimeout = CONNECTION_TIMEOUT
+            connection.readTimeout = CONNECTION_TIMEOUT
             val inputStream = connection.getInputStream()
             val size = connection.contentLength
             val array = ByteArray(size)
