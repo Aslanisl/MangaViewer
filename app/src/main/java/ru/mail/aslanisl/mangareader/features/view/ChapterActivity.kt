@@ -3,11 +3,10 @@ package ru.mail.aslanisl.mangareader.features.view
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.animation.Animation
+import android.view.KeyEvent
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -93,22 +92,43 @@ class ChapterActivity : BaseActivity() {
 
         adapter.tapListener = { toggleUI() }
 
-        previous.setOnClickListener {
-            val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-            if (currentPosition <= 0) return@setOnClickListener
-            chapterImages.smoothScrollToPosition(currentPosition - 1)
-        }
+        previous.setOnClickListener(::previous)
+        next.setOnClickListener(::next)
+    }
 
-        next.setOnClickListener {
-            val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-            if (currentPosition < 0) return@setOnClickListener
-            if (currentPosition + 1 >= adapter.itemCount) {
-                setResult(Activity.RESULT_OK)
-                finish()
-                return@setOnClickListener
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                previous()
+                true
             }
-            chapterImages.smoothScrollToPosition(currentPosition + 1)
+
+            KeyEvent.KEYCODE_VOLUME_UP -> {
+                next()
+                true
+            }
+
+            else -> super.onKeyDown(keyCode, event)
         }
+    }
+
+    private fun next(view: View? = null) {
+        val lm = chapterImages.layoutManager as LinearLayoutManager
+        val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
+        if (currentPosition < 0) return
+        if (currentPosition + 1 >= adapter.itemCount) {
+            setResult(Activity.RESULT_OK)
+            finish()
+            return
+        }
+        chapterImages.smoothScrollToPosition(currentPosition + 1)
+    }
+
+    private fun previous(view: View? = null) {
+        val lm = chapterImages.layoutManager as LinearLayoutManager
+        val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
+        if (currentPosition <= 0) return
+        chapterImages.smoothScrollToPosition(currentPosition - 1)
     }
 
     private var animating = false
