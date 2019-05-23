@@ -49,6 +49,7 @@ class HistoryMangaFragment : BaseFragment() {
         viewModel.loadHistoryManga().observe(this, observer)
 
         adapter.listener = { mangaInfo ->
+            viewModel.setMangaRead(mangaInfo)
             MangaDetailsActivity.openManga(contextNotNull, mangaInfo.id)
         }
     }

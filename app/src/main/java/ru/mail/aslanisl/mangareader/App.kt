@@ -9,6 +9,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import ru.mail.aslanisl.mangareader.db.Database
 import ru.mail.aslanisl.mangareader.db.DatabaseBuilder
+import ru.mail.aslanisl.mangareader.domain.MangaReadUseCase
 import ru.mail.aslanisl.mangareader.features.details.DetailsViewModel
 import ru.mail.aslanisl.mangareader.features.genre.GenreViewModel
 import ru.mail.aslanisl.mangareader.features.history.HistoryViewModel
@@ -39,6 +40,7 @@ class App : Application() {
         viewModel { GenreViewModel(get(), get()) }
         viewModel { HistoryViewModel(get(), get()) }
         single { ImageCacheService(get()) }
+        single { MangaReadUseCase(get()) }
     }
 
     override fun onCreate() {
