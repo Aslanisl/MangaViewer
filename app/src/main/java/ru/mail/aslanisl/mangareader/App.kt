@@ -1,7 +1,6 @@
 package ru.mail.aslanisl.mangareader
 
 import android.app.Application
-import android.util.Log
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -18,8 +17,6 @@ import ru.mail.aslanisl.mangareader.features.view.ChapterViewModel
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.MangaSourceFactory
 import ru.mail.aslanisl.mangareader.utils.image.ImageCacheService
-import java.util.Calendar
-import java.util.Date
 
 class App : Application() {
 
@@ -50,9 +47,5 @@ class App : Application() {
             androidContext(this@App)
             modules(appModule)
         }
-
-        Log.d("TimeTest", "System ${System.currentTimeMillis()}")
-        Log.d("TimeTest", "Data ${Date().time}")
-        Log.d("TimeTest", "Calendar ${Calendar.getInstance().timeInMillis}")
     }
 }
