@@ -8,7 +8,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
 
-object ImageLoadService : KoinComponent, CoroutineScope {
+object ImageLoader : KoinComponent, CoroutineScope {
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -21,7 +21,14 @@ object ImageLoadService : KoinComponent, CoroutineScope {
 
     }
 
-    fun loadUrl(url: String?, target: ImageView, progressListener: NetProgressListener? = null) {
+    fun request() = RequestBuilder(this)
+
+    internal fun load(requestBuilder: RequestBuilder) {
+        val target = requestBuilder.targetView?.get() ?: return
+        loadUrl(requestBuilder.urlImage, target, requestBuilder.listener)
+    }
+
+    private fun loadUrl(url: String?, target: ImageView, progressListener: NetProgressListener? = null) {
         synchronized(requests) {
             val sameTargetRequest = requests.firstOrNull { it.target?.hashCode() == target.hashCode() }
             if (sameTargetRequest != null) {

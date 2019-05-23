@@ -19,7 +19,7 @@ import ru.mail.aslanisl.mangareader.getDrawableCompat
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
 import ru.mail.aslanisl.mangareader.toast
-import ru.mail.aslanisl.mangareader.utils.image.ImageLoadService
+import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 
 
 private const val KEY_MANGA = "KEY_MANGA"
@@ -84,7 +84,7 @@ class MangaDetailsActivity : BaseActivity() {
 
     private fun initMangaDetails(mangaDetails: MangaDetails) {
         mangaDetailsToolbar.title = mangaDetails.name
-        ImageLoadService.loadUrl(mangaDetails.photoUrl, mangaPoster)
+        ImageLoader.request().url(mangaDetails.photoUrl).target(mangaPoster)
         if (mangaDetails.photoUrl.isNullOrEmpty()) mangaPoster.gone() else mangaPoster.show()
         description.text = mangaDetails.description
         if (mangaDetails.description.isEmpty()) description.gone() else description.show()
