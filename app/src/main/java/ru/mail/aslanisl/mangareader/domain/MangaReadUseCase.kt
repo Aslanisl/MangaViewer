@@ -18,4 +18,7 @@ class MangaReadUseCase(private val mangaReadDao: MangaReadDao) {
         )
         mangaReadDao.setMangaRead(mangaRead)
     }
+
+    @WorkerThread
+    fun getReadManga(sourceClazzName: String) = mangaReadDao.getReadManga(sourceClazzName)
 }
