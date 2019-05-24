@@ -1,5 +1,6 @@
 package ru.mail.aslanisl.mangareader.features.main
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.Typeface
@@ -11,10 +12,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.custom_nav_view.view.*
 import ru.mail.aslanisl.mangareader.R
+import ru.mail.aslanisl.mangareader.features.main.MainItem.GENRE
+import ru.mail.aslanisl.mangareader.features.main.MainItem.HISTORY
+import ru.mail.aslanisl.mangareader.features.main.MainItem.SEARCH
+import ru.mail.aslanisl.mangareader.features.main.MainItem.SETTINGS
 import ru.mail.aslanisl.mangareader.getColorCompat
+import ru.mail.aslanisl.mangareader.getDimensionPixel
+import kotlin.math.roundToInt
 
 private const val KEY_SUPER_BUNDLE = "KEY_SUPER_BUNDLE"
 private const val KEY_CURRENT_ITEM = "KEY_CURRENT_ITEM"
+
+private const val DURATION_ANIMATION = 150L
 
 class BottomNavView
 @JvmOverloads constructor(
@@ -25,6 +34,14 @@ class BottomNavView
 
     private val selectColor = context.getColorCompat(R.color.bottomSelectColor)
     private val unselectColor = context.getColorCompat(R.color.bottomUnselectColor)
+
+    private val iconSizeSelected = context.getDimensionPixel(R.dimen.bottom_item_image_height_selected)
+    private val iconSizeUnselected = context.getDimensionPixel(R.dimen.bottom_item_image_height_unselected)
+
+    private val fontSizeSelected = context.getDimensionPixel(R.dimen.font_normal)
+    private val fontSizeUnselected = context.getDimensionPixel(R.dimen.font_small)
+
+    private val animators = mutableMapOf<Int, ValueAnimator>()
 
     var listener: ((MainItem) -> Unit)? = null
     var sameItemListener: ((MainItem) -> Unit)? = null
@@ -59,6 +76,47 @@ class BottomNavView
         updateTitleItem(genreTitle, currentItem == MainItem.GENRE)
         updateTitleItem(historyTitle, currentItem == MainItem.HISTORY)
         updateTitleItem(settingsTitle, currentItem == MainItem.SETTINGS)
+
+        selectItem()
+    }
+
+    private fun selectItem() {
+        val image = when (currentItem) {
+            SEARCH -> searchImage
+            GENRE -> genreImage
+            HISTORY -> historyImage
+            SETTINGS -> settingsImage
+            else -> null
+        } ?: return
+
+        val title = when (currentItem) {
+            SEARCH -> searchTitle
+            GENRE -> genreTitle
+            HISTORY -> historyTitle
+            SETTINGS -> settingsTitle
+            else -> null
+        } ?: return
+
+        var animator = animators[image.id]
+        if (animator == null) {
+            animator = ValueAnimator()
+            animator.duration = DURATION_ANIMATION
+            animators[image.id] = animator
+        } else {
+            animator.cancel()
+            animator.removeAllUpdateListeners()
+        }
+        animator.setFloatValues(0f, 1f)
+        animator.addUpdateListener {
+            val value = it.animatedValue as Float
+
+            val ratio = 1f / value
+            val diff = (iconSizeSelected - iconSizeUnselected) / ratio
+            image.layoutParams.height = (iconSizeUnselected + diff).roundToInt()
+            image.layoutParams.width = (iconSizeUnselected + diff).roundToInt()
+            image.requestLayout()
+        }
+        animator.start()
     }
 
     private fun updateColorItem(view: ImageView, select: Boolean) {

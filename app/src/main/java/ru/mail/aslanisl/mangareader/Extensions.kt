@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -80,3 +81,13 @@ fun View.hideKeyboard() {
 }
 
 fun getString(@StringRes resId: Int): String = App.instance.getString(resId)
+
+fun <T> catch(defaultValue: T, block: () -> T): T {
+    return try {
+        block()
+    } catch (e: Exception) {
+        defaultValue
+    }
+}
+
+fun Context.getDimensionPixel(@DimenRes id: Int) = catch(0) { resources.getDimensionPixelSize(id) }
