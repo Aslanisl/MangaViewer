@@ -13,7 +13,6 @@ import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
-import ru.mail.aslanisl.mangareader.utils.GlideApp
 import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 import ru.mail.aslanisl.mangareader.utils.image.NetProgressListener
 
