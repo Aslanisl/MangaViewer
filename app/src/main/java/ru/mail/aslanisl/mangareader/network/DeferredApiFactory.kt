@@ -34,6 +34,6 @@ class DeferredApiFactory private constructor() : CallAdapter.Factory() {
                 "ApiResponse must be parameterized as ApiResponse<Foo> or ApiResponse<out Foo>")
         }
 
-        return ApiAdapter<Any>(retrofit, getParameterUpperBound(0, observableType))
+        return ApiAdapter<Any>(getParameterUpperBound(0, observableType))
     }
 }

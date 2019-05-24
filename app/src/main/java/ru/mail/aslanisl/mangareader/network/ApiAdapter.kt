@@ -10,10 +10,7 @@ import retrofit2.Retrofit
 import ru.mail.aslanisl.mangareader.data.base.ApiResponse
 import java.lang.reflect.Type
 
-class ApiAdapter<T>(
-    private val retrofit: Retrofit,
-    private val responseType: Type
-) : CallAdapter<T, Deferred<ApiResponse<T>>> {
+class ApiAdapter<T>(private val responseType: Type) : CallAdapter<T, Deferred<ApiResponse<T>>> {
 
     override fun responseType() = responseType
 
@@ -32,7 +29,7 @@ class ApiAdapter<T>(
             }
 
             override fun onResponse(call: Call<T>, response: Response<T>) {
-                deferred.complete(ApiResponse.create(retrofit, response))
+                deferred.complete(ApiResponse.create(response))
             }
         })
 

@@ -5,14 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.bumptech.glide.Glide
 import ru.mail.aslanisl.mangareader.R.id
 import ru.mail.aslanisl.mangareader.R.layout
 import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.features.base.loadingAdapter.LoadingRecyclerAdapter
 import ru.mail.aslanisl.mangareader.features.mangaList.MangaAdapter.MangaViewHolder
+import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 
 class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
 
@@ -47,7 +46,7 @@ class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
 
         fun init(manga: Manga) {
             currentManga = manga
-            Glide.with(photo).load(manga.photoUrl).into(photo)
+            ImageLoader.request().url(manga.photoUrl).target(photo)
             name.text = manga.name
             description.text = manga.description
         }

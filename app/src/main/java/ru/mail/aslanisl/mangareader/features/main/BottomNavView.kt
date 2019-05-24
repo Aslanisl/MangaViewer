@@ -49,7 +49,7 @@ class BottomNavView
     }
 
     private fun updateColorItem(view: ImageView, select: Boolean) {
-        view.setColorFilter(if (select) selectColor else unselectColor, PorterDuff.Mode.OVERLAY)
+        view.setColorFilter(if (select) selectColor else unselectColor, PorterDuff.Mode.MULTIPLY)
     }
 
     override fun onSaveInstanceState(): Parcelable {

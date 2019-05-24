@@ -14,7 +14,7 @@ class ApiResponse<T>(
             return ApiResponse(throwable = throwable, code = 500)
         }
 
-        fun <T> create(retrofit: Retrofit, response: Response<T>?): ApiResponse<T> {
+        fun <T> create(response: Response<T>?): ApiResponse<T> {
             if (response?.isSuccessful == true) {
                 return ApiResponse(response.body(), code = 200)
             }

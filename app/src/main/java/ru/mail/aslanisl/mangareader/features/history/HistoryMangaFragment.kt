@@ -46,12 +46,16 @@ class HistoryMangaFragment : BaseFragment() {
 
         historyMangaList.layoutManager = LinearLayoutManager(contextNotNull)
         historyMangaList.adapter = adapter
-        viewModel.loadHistoryManga().observe(this, observer)
 
         adapter.listener = { mangaInfo ->
             viewModel.setMangaRead(mangaInfo)
             MangaDetailsActivity.openManga(contextNotNull, mangaInfo.id)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadHistoryManga().observe(this, observer)
     }
 
     private fun initResult(data: UIData<List<Manga>>) {

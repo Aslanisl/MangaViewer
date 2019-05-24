@@ -9,24 +9,23 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="12dp"
-        android:src="@drawable/icon_genre" />
+        android:padding="16dp"
+        android:src="@drawable/ic_binocular" />
 
     <ImageView
         android:id="@+id/genre"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="12dp"
-        android:src="@drawable/icon_genre" />
+        android:padding="16dp"
+        android:src="@drawable/ic_book" />
 
     <ImageView
         android:id="@+id/history"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="12dp"
-        android:src="@drawable/icon_genre" />
-
+        android:padding="16dp"
+        android:src="@drawable/ic_bookmark" />
 
 </LinearLayout>
