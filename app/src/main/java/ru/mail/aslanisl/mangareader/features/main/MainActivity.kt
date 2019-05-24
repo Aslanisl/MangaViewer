@@ -1,6 +1,7 @@
 package ru.mail.aslanisl.mangareader.features.main
 
 import android.os.Bundle
+import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.features.base.BaseActivity
@@ -12,6 +13,8 @@ import ru.mail.aslanisl.mangareader.features.main.MainItem.GENRE
 import ru.mail.aslanisl.mangareader.features.main.MainItem.HISTORY
 import ru.mail.aslanisl.mangareader.features.main.MainItem.NONE
 import ru.mail.aslanisl.mangareader.features.main.MainItem.SEARCH
+import ru.mail.aslanisl.mangareader.gone
+import ru.mail.aslanisl.mangareader.show
 
 class MainActivity : BaseActivity() {
 
@@ -31,21 +34,24 @@ class MainActivity : BaseActivity() {
         var title = ""
         when (item) {
             SEARCH -> {
-                fragment = MangaListFragment.newInstance()
+                fragment = getMainFragment(MangaListFragment.TAG, item)
                 tag = MangaListFragment.TAG
                 title = getString(R.string.title_search)
+                toolbarShadow.gone()
             }
 
             GENRE -> {
-                fragment = GenreListFragment.newInstance()
+                fragment = getMainFragment(GenreListFragment.TAG, item)
                 tag = GenreListFragment.TAG
                 title = getString(R.string.title_genres)
+                toolbarShadow.show()
             }
 
             HISTORY -> {
-                fragment = HistoryMangaFragment.newInstance()
+                fragment = getMainFragment(HistoryMangaFragment.TAG, item)
                 tag = HistoryMangaFragment.TAG
                 title = getString(R.string.title_history)
+                toolbarShadow.show()
             }
 
             NONE -> {}
@@ -55,9 +61,26 @@ class MainActivity : BaseActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.container, fragment, tag)
+            .addToBackStack(null)
             .commitAllowingStateLoss()
 
         mainToolbar.title = title
+    }
+
+    private fun getMainFragment(tag: String, item: MainItem): BaseFragment? {
+        return supportFragmentManager
+            .findFragmentByTag(tag) as BaseFragment?
+            ?: createFragment(item)
+    }
+
+    private fun createFragment(item: MainItem): BaseFragment? {
+        return when (item) {
+            SEARCH -> MangaListFragment.newInstance()
+            GENRE -> GenreListFragment.newInstance()
+            HISTORY -> HistoryMangaFragment.newInstance()
+
+            NONE -> null
+        }
     }
 
     override fun onBackPressed() {
@@ -65,6 +88,9 @@ class MainActivity : BaseActivity() {
         if (currentFragment is OnBackPressListener && currentFragment.onBackPressed()) {
             return
         }
+
+        supportFragmentManager.popBackStackImmediate(null, POP_BACK_STACK_INCLUSIVE)
+        finishAffinity()
         super.onBackPressed()
     }
 }

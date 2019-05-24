@@ -8,4 +8,5 @@
     <color name="bottomSelectColor">#FF5722</color>
     <color name="bottomUnselectColor">#A9A9A9</color>
     <color name="colorTextSelect">#FFFFFF</color>
+    <color name="backgroundToolbar">#FFFFFF</color>
 </resources>

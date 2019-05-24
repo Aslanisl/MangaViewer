@@ -16,7 +16,7 @@
         android:id="@+id/mainToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/backgroundToolbar"
         app:titleTextColor="@android:color/black" />
 
     <FrameLayout
@@ -28,14 +28,15 @@
         tools:context=".features.main.MainActivity" />
 
     <View
+        android:id="@+id/toolbarShadow"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="@dimen/shadow_height"
         android:layout_below="@id/mainToolbar"
         android:background="@drawable/shadow_bottom" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="@dimen/shadow_height"
         android:layout_above="@id/navView"
         android:background="@drawable/shadow_top" />
 

@@ -1,53 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".features.mangaList.MangaListFragment">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/searchToolbar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/bg_search"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundToolbar">
 
-        <EditText
-            android:id="@+id/searchEdit"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="center|start"
-            android:hint="@string/search_hint"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:maxLines="1"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
-
-        <FrameLayout
-            android:id="@+id/search"
-            android:layout_width="48dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@drawable/bg_search_button">
+            android:layout_margin="8dp"
+            android:background="@drawable/bg_search"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_search" />
+            <EditText
+                android:id="@+id/searchEdit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center|start"
+                android:hint="@string/search_hint"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
 
-        </FrameLayout>
+            <FrameLayout
+                android:id="@+id/search"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_search_button">
 
-    </LinearLayout>
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_search" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mangasList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/searchToolbar"
         android:clipToPadding="false"
         android:padding="16dp" />
 
-</LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/shadow_height"
+        android:layout_below="@id/searchToolbar"
+        android:background="@drawable/shadow_bottom" />
+
+</RelativeLayout>
