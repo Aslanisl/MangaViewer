@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".features.main.MainActivity">
 
     <ru.mail.aslanisl.mangareader.features.main.BottomNavView
         android:id="@+id/navView"
@@ -12,27 +12,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/mainToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/backgroundToolbar"
-        app:titleTextColor="@android:color/black" />
-
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/navView"
-        android:layout_below="@id/mainToolbar"
-        tools:context=".features.main.MainActivity" />
-
-    <View
-        android:id="@+id/toolbarShadow"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/shadow_height"
-        android:layout_below="@id/mainToolbar"
-        android:background="@drawable/shadow_bottom" />
+        android:layout_above="@id/navView" />
 
     <View
         android:layout_width="match_parent"

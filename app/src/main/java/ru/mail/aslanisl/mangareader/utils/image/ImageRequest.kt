@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import android.util.LruCache
 import android.widget.ImageView
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.Lifecycle
@@ -15,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.lang.ref.SoftReference
 import java.lang.ref.WeakReference
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
@@ -25,11 +28,12 @@ private const val CONNECTION_TIMEOUT = 60 * 1000
 
 class RequestService(
     context: Context,
-    private val url: String,
+    val url: String?,
     target: ImageView,
     private var progressListener: NetProgressListener?,
     private val cacheService: ImageCacheService,
-    private val parentService: ImageLoader
+    private val parentService: ImageLoader,
+    private val memoryCache: LruCache<String, SoftReference<Bitmap>>
 ) : CoroutineScope, LifecycleObserver {
 
     private var job: Job = Job()
@@ -54,9 +58,16 @@ class RequestService(
     }
 
     fun makeRequest(forceLoadNet: Boolean = false) {
+        if (forceLoadNet.not() && loadFromMemory()) return
+
         target?.setImageBitmap(null)
 
         launch {
+            val url = url
+            if (url.isNullOrEmpty()) {
+                return@launch
+            }
+
             val loadIsCacheExist = cacheService.isNeedToLoad(url) || forceLoadNet
 
             val cache = loadFromCache(url)
@@ -66,7 +77,12 @@ class RequestService(
                         if (cancelSetImage.get().not()) target?.setImageBitmap(cache)
                     }
                 }
+
+                Log.d("Loading", "Cache $url")
+
                 if (loadIsCacheExist.not()) {
+                    putToMemory(url, cache)
+
                     postUI {
                         if (cancelProgressListener.get().not()) progressListener?.onFinish()
                         finishWork()
@@ -74,8 +90,11 @@ class RequestService(
                     return@launch
                 }
             }
+
             val bitmap = loadFromNet(url, cache == null)
             if (bitmap != null) {
+                Log.d("Loading", "Net $url")
+
                 if (cancelSetImage.get().not()) {
                     postUI {
                         if (cancelSetImage.get().not()) target?.setImageBitmap(bitmap)
@@ -84,6 +103,24 @@ class RequestService(
             }
             postUI { finishWork() }
         }
+    }
+
+    private fun loadFromMemory(): Boolean {
+        val memoryBitmap = memoryCache[url]?.get()
+        if (memoryBitmap != null) {
+            if (cancelSetImage.get().not()) {
+                target?.setImageBitmap(memoryBitmap)
+                if (cancelProgressListener.get().not()) progressListener?.onFinish()
+                finishWork()
+            }
+            Log.d("Loading", "Memory $url")
+            return true
+        }
+        return false
+    }
+
+    private fun putToMemory(key: String, bitmap: Bitmap) {
+        memoryCache.put(key, SoftReference(bitmap))
     }
 
     @WorkerThread
@@ -141,6 +178,7 @@ class RequestService(
 
             val bitmap = BitmapFactory.decodeByteArray(array, 0, array.size)
             cacheService.saveBitmap(src, bitmap)
+            putToMemory(src, bitmap)
 
             if (showLoading) {
                 if (cancelProgressListener.get().not()) {
@@ -177,7 +215,7 @@ class RequestService(
         cancelProgressListener.set(true)
     }
 
-    private fun cancelRequest(sendCancel: Boolean = true) {
+    fun cancelRequest(sendCancel: Boolean = true) {
         if (sendCancel) {
             postUI {
                 if (cancelProgressListener.get().not()) progressListener?.onCancel()

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.jakewharton.disklrucache.DiskLruCache
 import java.io.File
 import java.io.IOException
@@ -25,6 +26,8 @@ private const val DELAY_UPDATE_TIME = 24 * 60 * 60 * 1000L // 1 day
 
 class ImageCacheService constructor(private val context: Context) {
 
+    private var diskCache: DiskLruCache? = null
+
     fun loadImage(cacheKey: String): Bitmap? {
         val key = md5(cacheKey)
         key ?: return null
@@ -36,12 +39,11 @@ class ImageCacheService constructor(private val context: Context) {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
             snapshot.close()
+
             return bitmap
         } catch (e: Exception) {
             e.printStackTrace()
             return null
-        } finally {
-            diskCache?.close()
         }
     }
 
@@ -66,8 +68,6 @@ class ImageCacheService constructor(private val context: Context) {
             editor.commit()
         } catch (e: Exception) {
             e.printStackTrace()
-        } finally {
-            diskCache?.close()
         }
     }
 
@@ -88,8 +88,6 @@ class ImageCacheService constructor(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
             true
-        } finally {
-            diskCache?.close()
         }
     }
 
@@ -103,8 +101,6 @@ class ImageCacheService constructor(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
             false
-        } finally {
-            diskCache?.close()
         }
     }
 
@@ -116,14 +112,21 @@ class ImageCacheService constructor(private val context: Context) {
         openDiskCache()?.delete()
     }
 
-    private fun openDiskCache(): DiskLruCache? {
+    fun openDiskCache(): DiskLruCache? {
+        if (diskCache != null) return diskCache
+
         val cacheDir = File(context.cacheDir, "imageCache")
         try {
-            return DiskLruCache.open(cacheDir, APP_VERSION, VALUE_COUNT, MAX_DISK_CACHE_BYTES)
+            diskCache = DiskLruCache.open(cacheDir, APP_VERSION, VALUE_COUNT, MAX_DISK_CACHE_BYTES)
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return null
+        return diskCache
+    }
+
+    fun closeDiskCache() {
+        diskCache?.close()
+        diskCache = null
     }
 
     private fun md5(s: String?): String? {

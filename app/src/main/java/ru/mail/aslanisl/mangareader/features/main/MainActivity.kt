@@ -13,6 +13,8 @@ import ru.mail.aslanisl.mangareader.features.main.MainItem.GENRE
 import ru.mail.aslanisl.mangareader.features.main.MainItem.HISTORY
 import ru.mail.aslanisl.mangareader.features.main.MainItem.NONE
 import ru.mail.aslanisl.mangareader.features.main.MainItem.SEARCH
+import ru.mail.aslanisl.mangareader.features.main.MainItem.SETTINGS
+import ru.mail.aslanisl.mangareader.features.settings.SettingsFragment
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
 
@@ -23,6 +25,7 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         navView.listener = { selectItem(it) }
+        navView.sameItemListener = { holdBackPressedFragment() }
         if (savedInstanceState == null) {
             navView.selectItem(SEARCH)
         }
@@ -31,30 +34,28 @@ class MainActivity : BaseActivity() {
     private fun selectItem(item: MainItem) {
         var fragment: BaseFragment? = null
         var tag: String? = null
-        var title = ""
         when (item) {
             SEARCH -> {
                 fragment = getMainFragment(MangaListFragment.TAG, item)
                 tag = MangaListFragment.TAG
-                title = getString(R.string.title_search)
-                toolbarShadow.gone()
             }
 
             GENRE -> {
                 fragment = getMainFragment(GenreListFragment.TAG, item)
                 tag = GenreListFragment.TAG
-                title = getString(R.string.title_genres)
-                toolbarShadow.show()
             }
 
             HISTORY -> {
                 fragment = getMainFragment(HistoryMangaFragment.TAG, item)
                 tag = HistoryMangaFragment.TAG
-                title = getString(R.string.title_history)
-                toolbarShadow.show()
+            }
+            SETTINGS -> {
+                fragment = getMainFragment(SettingsFragment.TAG, item)
+                tag = SettingsFragment.TAG
             }
 
-            NONE -> {}
+            NONE -> {
+            }
         }
 
         if (fragment == null) return
@@ -63,8 +64,6 @@ class MainActivity : BaseActivity() {
             .replace(R.id.container, fragment, tag)
             .addToBackStack(null)
             .commitAllowingStateLoss()
-
-        mainToolbar.title = title
     }
 
     private fun getMainFragment(tag: String, item: MainItem): BaseFragment? {
@@ -78,16 +77,21 @@ class MainActivity : BaseActivity() {
             SEARCH -> MangaListFragment.newInstance()
             GENRE -> GenreListFragment.newInstance()
             HISTORY -> HistoryMangaFragment.newInstance()
-
+            SETTINGS -> SettingsFragment.newInstance()
             NONE -> null
         }
     }
 
-    override fun onBackPressed() {
+    private fun holdBackPressedFragment(): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
         if (currentFragment is OnBackPressListener && currentFragment.onBackPressed()) {
-            return
+            return true
         }
+        return false
+    }
+
+    override fun onBackPressed() {
+        if (holdBackPressedFragment()) return
 
         supportFragmentManager.popBackStackImmediate(null, POP_BACK_STACK_INCLUSIVE)
         finishAffinity()

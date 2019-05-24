@@ -21,4 +21,9 @@ class MangaReadUseCase(private val mangaReadDao: MangaReadDao) {
 
     @WorkerThread
     fun getReadManga(sourceClazzName: String) = mangaReadDao.getReadManga(sourceClazzName)
+
+    @WorkerThread
+    fun clearMangaHistory() {
+        mangaReadDao.clear()
+    }
 }

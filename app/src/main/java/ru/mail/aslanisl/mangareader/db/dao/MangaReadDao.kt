@@ -14,4 +14,7 @@ interface MangaReadDao {
 
     @Query("SELECT * FROM manga_read WHERE sourceClazzName = :sourceClazzName ORDER BY timeStamp DESC")
     fun getReadManga(sourceClazzName: String): List<MangaRead>
+
+    @Query("DELETE FROM manga_read")
+    fun clear()
 }

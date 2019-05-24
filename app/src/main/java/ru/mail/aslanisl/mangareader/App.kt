@@ -13,6 +13,7 @@ import ru.mail.aslanisl.mangareader.features.details.DetailsViewModel
 import ru.mail.aslanisl.mangareader.features.genre.GenreViewModel
 import ru.mail.aslanisl.mangareader.features.history.HistoryViewModel
 import ru.mail.aslanisl.mangareader.features.mangaList.MainViewModel
+import ru.mail.aslanisl.mangareader.features.settings.SettingsViewModel
 import ru.mail.aslanisl.mangareader.features.view.ChapterViewModel
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.MangaSourceFactory
@@ -36,6 +37,7 @@ class App : Application() {
         viewModel { ChapterViewModel(get()) }
         viewModel { GenreViewModel(get(), get()) }
         viewModel { HistoryViewModel(get(), get()) }
+        viewModel { SettingsViewModel(get()) }
         single { ImageCacheService(get()) }
         single { MangaReadUseCase(get()) }
     }

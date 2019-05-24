@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MediatorLiveData
@@ -77,3 +78,5 @@ fun View.hideKeyboard() {
         imm?.hideSoftInputFromWindow(it, 0)
     }
 }
+
+fun getString(@StringRes resId: Int): String = App.instance.getString(resId)

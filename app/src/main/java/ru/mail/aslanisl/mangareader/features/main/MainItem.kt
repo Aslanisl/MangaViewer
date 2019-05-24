@@ -4,5 +4,6 @@ enum class MainItem {
     NONE,
     SEARCH,
     GENRE,
+    SETTINGS,
     HISTORY
 }

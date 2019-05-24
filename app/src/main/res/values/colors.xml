@@ -2,11 +2,15 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
-    <color name="colorAccent">@color/colorTextSelect</color>
+    <color name="colorAccent">@color/orange</color>
 
     <color name="dark">#1C1C1C</color>
-    <color name="bottomSelectColor">#FF5722</color>
+    <color name="bottomSelectColor">@color/orange</color>
     <color name="bottomUnselectColor">#A9A9A9</color>
     <color name="colorTextSelect">#FFFFFF</color>
     <color name="backgroundToolbar">#FFFFFF</color>
+    <color name="colorTitleText">#000000</color>
+
+    <color name="orange">#FF5722</color>
+    <color name="lightOrange">#64FF5722</color>
 </resources>
