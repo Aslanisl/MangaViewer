@@ -45,10 +45,6 @@ class BottomNavView
     var listener: ((MainItem) -> Unit)? = null
     var sameItemListener: ((MainItem) -> Unit)? = null
 
-    private fun getDefaultValueAnimator(): ValueAnimator {
-        return ValueAnimator().apply { duration = DURATION_ANIMATION }
-    }
-
     private val items: List<BottomViewItem>
 
     var currentItem = MainItem.NONE
@@ -132,6 +128,10 @@ class BottomNavView
                 imageView.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
             }
         }
+    }
+
+    private fun getDefaultValueAnimator(): ValueAnimator {
+        return ValueAnimator().apply { duration = DURATION_ANIMATION }
     }
 
     override fun onSaveInstanceState(): Parcelable {
