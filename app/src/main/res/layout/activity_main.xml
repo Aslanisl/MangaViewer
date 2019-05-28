@@ -16,7 +16,8 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/navView" />
+        android:layout_above="@id/navView"
+        android:background="@android:color/white" />
 
     <View
         android:layout_width="match_parent"

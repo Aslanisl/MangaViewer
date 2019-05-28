@@ -3,13 +3,14 @@ package ru.mail.aslanisl.mangareader.features.main
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import kotlinx.android.synthetic.main.custom_nav_view.view.*
 import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.features.main.MainItem.GENRE
@@ -38,13 +39,17 @@ class BottomNavView
     private val iconSizeSelected = context.getDimensionPixel(R.dimen.bottom_item_image_height_selected)
     private val iconSizeUnselected = context.getDimensionPixel(R.dimen.bottom_item_image_height_unselected)
 
-    private val fontSizeSelected = context.getDimensionPixel(R.dimen.font_normal)
-    private val fontSizeUnselected = context.getDimensionPixel(R.dimen.font_small)
-
-    private val animators = mutableMapOf<Int, ValueAnimator>()
+    private val fontSizeSelected = context.getDimensionPixel(R.dimen.font_normal).toFloat()
+    private val fontSizeUnselected = context.getDimensionPixel(R.dimen.font_small).toFloat()
 
     var listener: ((MainItem) -> Unit)? = null
     var sameItemListener: ((MainItem) -> Unit)? = null
+
+    private fun getDefaultValueAnimator(): ValueAnimator {
+        return ValueAnimator().apply { duration = DURATION_ANIMATION }
+    }
+
+    private val items: List<BottomViewItem>
 
     var currentItem = MainItem.NONE
 
@@ -54,6 +59,15 @@ class BottomNavView
         genre.setOnClickListener { selectItem(MainItem.GENRE) }
         history.setOnClickListener { selectItem(MainItem.HISTORY) }
         settings.setOnClickListener { selectItem(MainItem.SETTINGS) }
+
+        items = listOf(
+            BottomViewItem(SEARCH, searchImage, searchTitle),
+            BottomViewItem(GENRE, genreImage, genreTitle),
+            BottomViewItem(HISTORY, historyImage, historyTitle),
+            BottomViewItem(SETTINGS, settingsImage, settingsTitle)
+        )
+
+        updateItems(false)
     }
 
     fun selectItem(item: MainItem) {
@@ -63,68 +77,61 @@ class BottomNavView
         }
         listener?.invoke(item)
         currentItem = item
-        updateItems()
+
+        updateItems(true)
     }
 
-    private fun updateItems() {
-        updateColorItem(searchImage, currentItem == MainItem.SEARCH)
-        updateColorItem(genreImage, currentItem == MainItem.GENRE)
-        updateColorItem(historyImage, currentItem == MainItem.HISTORY)
-        updateColorItem(settingsImage, currentItem == MainItem.SETTINGS)
+    private fun updateItems(animate: Boolean = true) {
+        items.forEach {
+            val select = it.item == currentItem
+            it.valueAnimator.cancel()
 
-        updateTitleItem(searchTitle, currentItem == MainItem.SEARCH)
-        updateTitleItem(genreTitle, currentItem == MainItem.GENRE)
-        updateTitleItem(historyTitle, currentItem == MainItem.HISTORY)
-        updateTitleItem(settingsTitle, currentItem == MainItem.SETTINGS)
+            if (animate.not()) {
+                it.imageView.setColorFilter(if (select) selectColor else unselectColor, PorterDuff.Mode.MULTIPLY)
 
-        selectItem()
-    }
+                it.imageView.layoutParams.height = if (select) iconSizeSelected else iconSizeUnselected
+                it.imageView.layoutParams.width = if (select) iconSizeSelected else iconSizeUnselected
+                it.imageView.requestLayout()
 
-    private fun selectItem() {
-        val image = when (currentItem) {
-            SEARCH -> searchImage
-            GENRE -> genreImage
-            HISTORY -> historyImage
-            SETTINGS -> settingsImage
-            else -> null
-        } ?: return
+                val size = if (select) fontSizeSelected else fontSizeUnselected
+                it.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size)
 
-        val title = when (currentItem) {
-            SEARCH -> searchTitle
-            GENRE -> genreTitle
-            HISTORY -> historyTitle
-            SETTINGS -> settingsTitle
-            else -> null
-        } ?: return
+            } else {
+                val old = it.valueAnimator.animatedValue as? Float
+                val from = old ?: if (select) 0f else 1f
+                val to = if (select) 1f else 0f
 
-        var animator = animators[image.id]
-        if (animator == null) {
-            animator = ValueAnimator()
-            animator.duration = DURATION_ANIMATION
-            animators[image.id] = animator
-        } else {
-            animator.cancel()
-            animator.removeAllUpdateListeners()
+                if (from == to) return@forEach
+
+                it.valueAnimator.setFloatValues(from, to)
+                it.valueAnimator.start()
+            }
         }
-        animator.setFloatValues(0f, 1f)
-        animator.addUpdateListener {
-            val value = it.animatedValue as Float
+    }
 
-            val ratio = 1f / value
-            val diff = (iconSizeSelected - iconSizeUnselected) / ratio
-            image.layoutParams.height = (iconSizeUnselected + diff).roundToInt()
-            image.layoutParams.width = (iconSizeUnselected + diff).roundToInt()
-            image.requestLayout()
+    inner class BottomViewItem(
+        val item: MainItem,
+        val imageView: ImageView,
+        val textView: TextView,
+        val valueAnimator: ValueAnimator = getDefaultValueAnimator()
+    ) {
+        init {
+            valueAnimator.addUpdateListener {
+                val value = it.animatedValue as Float
+
+                val ratio = 1f / value
+                val diff = (iconSizeSelected - iconSizeUnselected) / ratio
+                imageView.layoutParams.height = (iconSizeUnselected + diff).roundToInt()
+                imageView.layoutParams.width = (iconSizeUnselected + diff).roundToInt()
+                imageView.requestLayout()
+
+                val diffText = (fontSizeSelected - fontSizeUnselected) / ratio
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSizeUnselected + diffText)
+
+                val color = ColorUtils.blendARGB(unselectColor, selectColor, value)
+                imageView.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
+            }
         }
-        animator.start()
-    }
-
-    private fun updateColorItem(view: ImageView, select: Boolean) {
-        view.setColorFilter(if (select) selectColor else unselectColor, PorterDuff.Mode.MULTIPLY)
-    }
-
-    private fun updateTitleItem(view: TextView, select: Boolean) {
-        view.setTypeface(null, if (select) Typeface.BOLD else Typeface.NORMAL)
     }
 
     override fun onSaveInstanceState(): Parcelable {
@@ -144,7 +151,7 @@ class BottomNavView
             }
             superState = state.getParcelable(KEY_SUPER_BUNDLE)
         }
-        updateItems()
+        updateItems(false)
 
         super.onRestoreInstanceState(superState)
     }
