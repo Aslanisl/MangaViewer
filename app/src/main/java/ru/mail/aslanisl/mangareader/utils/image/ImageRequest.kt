@@ -78,8 +78,6 @@ class RequestService(
                     }
                 }
 
-                Log.d("Loading", "Cache $url")
-
                 if (loadIsCacheExist.not()) {
                     putToMemory(url, cache)
 

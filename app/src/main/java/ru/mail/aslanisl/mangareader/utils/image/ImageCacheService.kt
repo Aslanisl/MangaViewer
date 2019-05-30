@@ -84,7 +84,9 @@ class ImageCacheService constructor(private val context: Context) {
             timeStampInputStream.close()
             stream.close()
 
-            System.currentTimeMillis() - DELAY_UPDATE_TIME > timeStamp
+            // Just don't update now
+            false
+//            System.currentTimeMillis() - DELAY_UPDATE_TIME > timeStamp
         } catch (e: Exception) {
             e.printStackTrace()
             true
