@@ -5,11 +5,13 @@ import java.lang.ref.WeakReference
 
 class RequestBuilder(private val loadService: ImageLoader) {
 
-    var urlImage: String? = null
+    internal var urlImage: String? = null
         private set
-    var targetView: WeakReference<ImageView>? = null
+    internal var targetView: WeakReference<ImageView>? = null
         private set
-    var listener: NetProgressListener? = null
+    internal var listener: NetProgressListener? = null
+        private set
+    internal var wrapHeight: Boolean = false
         private set
 
     fun url(url: String?): RequestBuilder {
@@ -25,6 +27,11 @@ class RequestBuilder(private val loadService: ImageLoader) {
 
     fun progressListener(listener: NetProgressListener?): RequestBuilder {
         this.listener = listener
+        return this
+    }
+
+    fun wrapHeight(wrap: Boolean): RequestBuilder {
+        this.wrapHeight = wrap
         return this
     }
 

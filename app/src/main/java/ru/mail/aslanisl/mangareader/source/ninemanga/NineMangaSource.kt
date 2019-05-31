@@ -10,6 +10,7 @@ import ru.mail.aslanisl.mangareader.data.model.Genre
 import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
+import ru.mail.aslanisl.mangareader.source.MangaFilter
 
 private const val BASE_URL = "http://ru.ninemanga.com/"
 private const val BASE_URL_WITHOUT_LINE = "http://ru.ninemanga.com"
@@ -19,17 +20,19 @@ private const val BASE_URL_PHOTO = "https://ruimg.taadd.com"
 private const val MAX_COUNT_LOAD_PAGES = 10
 
 class NineMangaSource constructor(private val apiBuilder: ApiBuilder) : IMangaSource {
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter, offset: Int): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun genrePagingCount(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun loadMangaGenre(genreId: String, offset: Int): UIData<List<Manga>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override suspend fun loadMangaGenre(genreId: String): UIData<List<Manga>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override suspend fun loadGenres(): UIData<List<Genre>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

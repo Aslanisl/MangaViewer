@@ -67,7 +67,7 @@ class ChapterActivity : BaseActivity() {
         chapterToolbar.navigationIcon = getDrawableCompat(R.drawable.ic_left_arrow)
         chapterToolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val lm = object : LinearLayoutManager(this, RecyclerView.HORIZONTAL, false) {
+        val lm = object : LinearLayoutManager(this, RecyclerView.VERTICAL, false) {
             // Load more 2 items
             override fun getExtraLayoutSpace(state: RecyclerView.State?): Int {
                 return 2
@@ -86,31 +86,31 @@ class ChapterActivity : BaseActivity() {
                 updateToolbarTitle(firstVisible + 1)
             }
         })
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(chapterImages)
+//        val snapHelper = PagerSnapHelper()
+//        snapHelper.attachToRecyclerView(chapterImages)
         chapterImages.adapter = adapter
 
         adapter.tapListener = { toggleUI() }
 
-        previous.setOnClickListener(::previous)
-        next.setOnClickListener(::next)
+//        previous.setOnClickListener(::previous)
+//        next.setOnClickListener(::next)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                previous()
-                true
-            }
-
-            KeyEvent.KEYCODE_VOLUME_UP -> {
-                next()
-                true
-            }
-
-            else -> super.onKeyDown(keyCode, event)
-        }
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        return when (keyCode) {
+//            KeyEvent.KEYCODE_VOLUME_DOWN -> {
+//                previous()
+//                true
+//            }
+//
+//            KeyEvent.KEYCODE_VOLUME_UP -> {
+//                next()
+//                true
+//            }
+//
+//            else -> super.onKeyDown(keyCode, event)
+//        }
+//    }
 
     private fun next(view: View? = null) {
         val lm = chapterImages.layoutManager as LinearLayoutManager

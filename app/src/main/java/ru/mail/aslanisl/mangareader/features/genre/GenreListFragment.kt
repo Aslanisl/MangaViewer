@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.custom_filter_container.*
 import kotlinx.android.synthetic.main.fragment_genre_list.*
+import kotlinx.android.synthetic.main.fragment_genre_list.mangaFilters
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.data.base.UIData
@@ -21,6 +23,8 @@ import ru.mail.aslanisl.mangareader.getDrawableCompat
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.isVisible
 import ru.mail.aslanisl.mangareader.show
+import ru.mail.aslanisl.mangareader.source.MangaFilter
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NONE
 
 class GenreListFragment : BaseFragment(), OnBackPressListener {
 
@@ -70,7 +74,7 @@ class GenreListFragment : BaseFragment(), OnBackPressListener {
             viewModel.loadGenres().observe(this, genreObserver)
         }
 
-        genreAdapter.listener = ::selectGenre
+        genreAdapter.listener = { selectGenre(it, NONE) }
 
         mangaAdapter.listener = { mangaInfo ->
             viewModel.setMangaRead(mangaInfo)
@@ -79,7 +83,7 @@ class GenreListFragment : BaseFragment(), OnBackPressListener {
 
         mangaAdapter.setLoadMore {
             val genre = currentGenre ?: return@setLoadMore
-            viewModel.loadMangaForGenre(genre, mangaAdapter.itemCount).observe(this, mangaMoreObserver)
+            viewModel.loadMangaForGenre(genre, mangaAdapter.itemCount, mangaFilters.currentFilter).observe(this, mangaMoreObserver)
         }
     }
 
@@ -94,19 +98,26 @@ class GenreListFragment : BaseFragment(), OnBackPressListener {
         mangasList.layoutManager = LinearLayoutManager(contextNotNull)
         mangasList.adapter = mangaAdapter
         mangaAdapter.visibleThreshold = viewModel.getGenrePagingCount()
+
+        mangaFilters.listener = { filter ->
+            currentGenre?.let { selectGenre(it, filter) }
+        }
     }
 
-    private fun selectGenre(genre: Genre) {
+    private fun selectGenre(genre: Genre, filter: MangaFilter) {
         genreList.gone()
 
         genreToolbar.show()
         genreToolbar.title = genre.title
         genreToolbarShadow.show()
 
+        mangaFilters.show()
+
+        currentGenre = genre
+
         mangasList.scrollToPosition(0)
         mangaAdapter.clearItems()
-        currentGenre = genre
-        viewModel.loadMangaForGenre(genre).observe(this, mangaObserver)
+        viewModel.loadMangaForGenre(genre, filter).observe(this, mangaObserver)
     }
 
     private fun initGenreResult(data: UIData<List<Genre>>) {
@@ -140,6 +151,8 @@ class GenreListFragment : BaseFragment(), OnBackPressListener {
             mangasList.gone()
             genreToolbar.gone()
             genreToolbarShadow.gone()
+            mangaFilters.clearFilter()
+            mangaFilters.gone()
             genreList.show()
             return true
         }

@@ -2,7 +2,6 @@ package ru.mail.aslanisl.mangareader.utils.image
 
 import android.graphics.Bitmap
 import android.util.LruCache
-import android.widget.ImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,16 +37,13 @@ object ImageLoader : KoinComponent, CoroutineScope {
 
     fun request() = RequestBuilder(this)
 
-    internal fun load(requestBuilder: RequestBuilder) {
-        val target = requestBuilder.targetView?.get() ?: return
-        loadUrl(requestBuilder.urlImage, target, requestBuilder.listener)
-    }
+    internal fun load(request: RequestBuilder) {
+        val target = request.targetView?.get() ?: return
 
-    private fun loadUrl(url: String?, target: ImageView, progressListener: NetProgressListener? = null) {
         synchronized(requests) {
             val sameTargetRequest = requests.firstOrNull { it.target?.hashCode() == target.hashCode() }
 
-            if (sameTargetRequest?.url == url) {
+            if (sameTargetRequest?.url == request.urlImage) {
                 return@synchronized
             }
             if (sameTargetRequest != null) {
@@ -56,7 +52,7 @@ object ImageLoader : KoinComponent, CoroutineScope {
 
 //            cacheService.openDiskCache()
 
-            val service = RequestService(target.context, url, target, progressListener, cacheService, this, memoryCache)
+            val service = RequestService(target.context, request.urlImage, target, request.listener, request.wrapHeight, cacheService, this, memoryCache)
             service.makeRequest()
             requests.add(service)
         }

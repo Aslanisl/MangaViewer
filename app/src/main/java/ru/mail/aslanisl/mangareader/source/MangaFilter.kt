@@ -1,13 +1,9 @@
 package ru.mail.aslanisl.mangareader.source
 
-enum class MangaFilter {
+enum class MangaFilter(var asc: Boolean = true) {
     NONE,
-    DATE_ASC,
-    DATE_DESC,
-    FAVORITE_ASC,
-    FAVORITE_DESC,
-    NAME_ASC,
-    NAME_DESC,
-    CHAPTER_ASC,
-    CHAPTER_DESC,
+    DATE,
+    FAVORITE,
+    NAME,
+    CHAPTER,
 }

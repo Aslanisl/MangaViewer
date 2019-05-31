@@ -11,14 +11,10 @@ import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
 import ru.mail.aslanisl.mangareader.source.MangaFilter
-import ru.mail.aslanisl.mangareader.source.MangaFilter.CHAPTER_ASC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.CHAPTER_DESC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.DATE_ASC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.DATE_DESC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE_ASC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE_DESC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME_ASC
-import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME_DESC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.CHAPTER
+import ru.mail.aslanisl.mangareader.source.MangaFilter.DATE
+import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME
 import ru.mail.aslanisl.mangareader.source.MangaFilter.NONE
 
 private const val BASE_URL = "https://mangachan.me/"
@@ -70,17 +66,17 @@ class MangaChanSource : IMangaSource {
     }
 
     private fun resolveFilter(filter: MangaFilter): String {
-        return when (filter) {
+        var filterString = when (filter) {
             NONE -> ""
-            DATE_ASC -> "&n=dateasc"
-            DATE_DESC -> "&n=datedesc"
-            FAVORITE_ASC -> "&n=favasc"
-            FAVORITE_DESC -> "&n=favdesc"
-            NAME_ASC -> "&n=abcasc"
-            NAME_DESC -> "&n=abcdesc"
-            CHAPTER_ASC -> "&n=chasc"
-            CHAPTER_DESC -> "&n=chdesc"
+            DATE -> "&n=date"
+            FAVORITE -> "&n=fav"
+            NAME -> "&n=abc"
+            CHAPTER -> "&n=ch"
         }
+        if (filter != NONE) {
+            filterString += if (filter.asc) "asc" else "desc"
+        }
+        return filterString
     }
 
     override fun genrePagingCount() = PAGINATION_COUNT

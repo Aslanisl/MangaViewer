@@ -81,6 +81,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
                 .request()
                 .url(image.imageUrl)
                 .progressListener(progressListener)
+                .wrapHeight(true)
                 .target(imageView)
         }
     }

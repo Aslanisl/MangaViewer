@@ -7,4 +7,9 @@
     <string name="search_hint">Введите название манги</string>
     <string name="clear_history">Очистить историю просмотра</string>
     <string name="sure_clear_history">Вы действительно хотите очистить историю? Отменить нельзя.</string>
+    
+    <string name="filter_name">Алфавит</string>
+    <string name="filter_date">Дата</string>
+    <string name="filter_favorite">Популярые</string>
+    <string name="filter_chapters">Последние</string>
 </resources>

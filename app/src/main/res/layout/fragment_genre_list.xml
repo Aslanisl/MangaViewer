@@ -20,11 +20,21 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp" />
 
+    <ru.mail.aslanisl.mangareader.features.genre.FilterContainer
+        android:id="@+id/mangaFilters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/genreToolbar"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mangasList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/genreToolbar"
+        android:layout_below="@id/mangaFilters"
         android:clipToPadding="false"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
@@ -34,7 +44,7 @@
         android:id="@+id/genreToolbarShadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/shadow_height"
-        android:layout_below="@id/genreToolbar"
+        android:layout_below="@id/mangaFilters"
         android:background="@drawable/shadow_bottom"
         android:visibility="gone" />
 

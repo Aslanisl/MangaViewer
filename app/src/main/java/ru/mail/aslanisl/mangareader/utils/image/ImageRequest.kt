@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.LruCache
 import android.widget.ImageView
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -31,6 +32,7 @@ class RequestService(
     val url: String?,
     target: ImageView,
     private var progressListener: NetProgressListener?,
+    private var wrapHeight: Boolean,
     private val cacheService: ImageCacheService,
     private val parentService: ImageLoader,
     private val memoryCache: LruCache<String, SoftReference<Bitmap>>
@@ -74,13 +76,15 @@ class RequestService(
             if (cache != null) {
                 if (cancelSetImage.get().not()) {
                     postUI {
-                        if (cancelSetImage.get().not()) target?.setImageBitmap(cache)
+                        if (cancelSetImage.get()) return@postUI
+
+                        target?.setImageBitmap(cache)
+                        if (wrapHeight) wrapHeightTargetImage(cache)
                     }
                 }
 
                 if (loadIsCacheExist.not()) {
                     putToMemory(url, cache)
-
                     postUI {
                         if (cancelProgressListener.get().not()) progressListener?.onFinish()
                         finishWork()
@@ -91,16 +95,24 @@ class RequestService(
 
             val bitmap = loadFromNet(url, cache == null)
             if (bitmap != null) {
-                Log.d("Loading", "Net $url")
-
                 if (cancelSetImage.get().not()) {
                     postUI {
-                        if (cancelSetImage.get().not()) target?.setImageBitmap(bitmap)
+                        if (cancelSetImage.get()) return@postUI
+
+                        target?.setImageBitmap(bitmap)
+                        if (wrapHeight) wrapHeightTargetImage(bitmap)
                     }
                 }
             }
             postUI { finishWork() }
         }
+    }
+
+    @MainThread
+    private fun wrapHeightTargetImage(bitmap: Bitmap) {
+        val lp = target?.layoutParams ?: return
+        lp.height = (bitmap.height * lp.width) / bitmap.width
+        target?.requestLayout()
     }
 
     private fun loadFromMemory(): Boolean {

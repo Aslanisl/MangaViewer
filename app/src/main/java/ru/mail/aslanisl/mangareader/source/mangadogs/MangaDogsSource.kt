@@ -8,6 +8,7 @@ import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
+import ru.mail.aslanisl.mangareader.source.MangaFilter
 
 private const val BASE_URL = "https://api2.niadd.com/"
 
@@ -43,6 +44,13 @@ https://api2.niadd.com/comments/first_show/ \
  */
 
 class MangaDogsSource : IMangaSource {
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter, offset: Int): UIData<List<Manga>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val api by lazy { ApiBuilder().createRetrofit(BASE_URL).create(MangaDogsApi::class.java) }
 
@@ -55,13 +63,7 @@ class MangaDogsSource : IMangaSource {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun loadMangaGenre(genreId: String): UIData<List<Manga>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override suspend fun loadMangaGenre(genreId: String, offset: Int): UIData<List<Manga>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun genrePagingCount(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
