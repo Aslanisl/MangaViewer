@@ -10,8 +10,8 @@ interface IMangaSource {
     suspend fun searchManga(term: String): UIData<List<Manga>>
 
     suspend fun loadGenres(): UIData<List<Genre>>
-    suspend fun loadMangaGenre(genreId: String): UIData<List<Manga>>
-    suspend fun loadMangaGenre(genreId: String, offset: Int): UIData<List<Manga>>
+    suspend fun loadMangaGenre(genreId: String, filter: MangaFilter): UIData<List<Manga>>
+    suspend fun loadMangaGenre(genreId: String, filter: MangaFilter, offset: Int): UIData<List<Manga>>
     fun genrePagingCount(): Int
 
     suspend fun loadMangaDetails(idManga: String): UIData<MangaDetails>

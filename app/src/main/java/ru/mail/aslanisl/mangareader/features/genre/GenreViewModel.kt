@@ -9,6 +9,8 @@ import ru.mail.aslanisl.mangareader.domain.MangaReadUseCase
 import ru.mail.aslanisl.mangareader.features.base.BaseViewModel
 import ru.mail.aslanisl.mangareader.getLoadingLiveData
 import ru.mail.aslanisl.mangareader.source.IMangaSource
+import ru.mail.aslanisl.mangareader.source.MangaFilter
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NONE
 
 class GenreViewModel(
     private val source: IMangaSource,
@@ -24,19 +26,19 @@ class GenreViewModel(
         return liveData
     }
 
-    fun loadMangaForGenre(genre: Genre): LiveData<UIData<List<Manga>>> {
+    fun loadMangaForGenre(genre: Genre, filter: MangaFilter = NONE): LiveData<UIData<List<Manga>>> {
         val liveData = getLoadingLiveData<List<Manga>>()
         launch {
-            val mangas = source.loadMangaGenre(genre.id)
+            val mangas = source.loadMangaGenre(genre.id, filter)
             liveData.postValue(mangas)
         }
         return liveData
     }
 
-    fun loadMangaForGenre(genre: Genre, offset: Int): LiveData<UIData<List<Manga>>> {
+    fun loadMangaForGenre(genre: Genre, offset: Int, filter: MangaFilter = NONE): LiveData<UIData<List<Manga>>> {
         val liveData = getLoadingLiveData<List<Manga>>()
         launch {
-            val mangas = source.loadMangaGenre(genre.id, offset)
+            val mangas = source.loadMangaGenre(genre.id, filter, offset)
             liveData.postValue(mangas)
         }
         return liveData

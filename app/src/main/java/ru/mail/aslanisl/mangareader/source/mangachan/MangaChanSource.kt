@@ -10,6 +10,16 @@ import ru.mail.aslanisl.mangareader.data.model.MangaDetails
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.network.ApiBuilder
 import ru.mail.aslanisl.mangareader.source.IMangaSource
+import ru.mail.aslanisl.mangareader.source.MangaFilter
+import ru.mail.aslanisl.mangareader.source.MangaFilter.CHAPTER_ASC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.CHAPTER_DESC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.DATE_ASC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.DATE_DESC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE_ASC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE_DESC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME_ASC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME_DESC
+import ru.mail.aslanisl.mangareader.source.MangaFilter.NONE
 
 private const val BASE_URL = "https://mangachan.me/"
 private const val PAGINATION_COUNT = 20
@@ -43,20 +53,34 @@ class MangaChanSource : IMangaSource {
         }
     }
 
-    override suspend fun loadMangaGenre(genreId: String): UIData<List<Manga>> {
-        val result = api.request(genreId).await()
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter): UIData<List<Manga>> {
+        val result = api.request(genreId.dropLast(1) + resolveFilter(filter)).await()
         if (result.isSuccess().not()) {
             return UIData.errorThrowable(result.throwable)
         }
         return loadMangasFromHtml(result.body)
     }
 
-    override suspend fun loadMangaGenre(genreId: String, offset: Int): UIData<List<Manga>> {
-        val result = api.request("$genreId?offset=$offset").await()
+    override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter, offset: Int): UIData<List<Manga>> {
+        val result = api.request("${genreId.dropLast(1)}${resolveFilter(filter)}?offset=$offset").await()
         if (result.isSuccess().not()) {
             return UIData.errorThrowable(result.throwable)
         }
         return loadMangasFromHtml(result.body)
+    }
+
+    private fun resolveFilter(filter: MangaFilter): String {
+        return when (filter) {
+            NONE -> ""
+            DATE_ASC -> "&n=dateasc"
+            DATE_DESC -> "&n=datedesc"
+            FAVORITE_ASC -> "&n=favasc"
+            FAVORITE_DESC -> "&n=favdesc"
+            NAME_ASC -> "&n=abcasc"
+            NAME_DESC -> "&n=abcdesc"
+            CHAPTER_ASC -> "&n=chasc"
+            CHAPTER_DESC -> "&n=chdesc"
+        }
     }
 
     override fun genrePagingCount() = PAGINATION_COUNT
