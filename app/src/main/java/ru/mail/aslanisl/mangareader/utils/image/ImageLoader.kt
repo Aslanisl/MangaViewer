@@ -41,7 +41,7 @@ object ImageLoader : KoinComponent, CoroutineScope {
         val target = request.targetView?.get() ?: return
 
         synchronized(requests) {
-            val sameTargetRequest = requests.firstOrNull { it.target?.hashCode() == target.hashCode() }
+            val sameTargetRequest = requests.firstOrNull { it.targetView.target.get()?.hashCode() == target.hashCode() }
 
             if (sameTargetRequest?.url == request.urlImage) {
                 return@synchronized
@@ -52,7 +52,8 @@ object ImageLoader : KoinComponent, CoroutineScope {
 
 //            cacheService.openDiskCache()
 
-            val service = RequestService(target.context, request.urlImage, target, request.listener, request.wrapHeight, cacheService, this, memoryCache)
+            val targetView = TargetView.init(target, request.wrapHeight)
+            val service = RequestService(target.context, request.urlImage, request.listener, targetView, cacheService, this, memoryCache)
             service.makeRequest()
             requests.add(service)
         }

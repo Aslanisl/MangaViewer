@@ -24,15 +24,14 @@ import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
-private const val PROGRESS_STEP = 5f
+private const val PROGRESS_STEP = 1f
 private const val CONNECTION_TIMEOUT = 60 * 1000
 
 class RequestService(
     context: Context,
     val url: String?,
-    target: ImageView,
     private var progressListener: NetProgressListener?,
-    private var wrapHeight: Boolean,
+    val targetView: TargetView,
     private val cacheService: ImageCacheService,
     private val parentService: ImageLoader,
     private val memoryCache: LruCache<String, SoftReference<Bitmap>>
@@ -42,11 +41,6 @@ class RequestService(
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.IO
     private val mainHandler = Handler(Looper.getMainLooper())
-
-    private var targetView: WeakReference<ImageView> = WeakReference(target)
-
-    val target: ImageView?
-        get() = targetView.get()
 
     private var cancelNetJob = AtomicBoolean(false)
     private var cancelSetImage = AtomicBoolean(false)
@@ -62,7 +56,7 @@ class RequestService(
     fun makeRequest(forceLoadNet: Boolean = false) {
         if (forceLoadNet.not() && loadFromMemory()) return
 
-        target?.setImageBitmap(null)
+        targetView.setImageBitmap(null)
 
         launch {
             val url = url
@@ -75,12 +69,7 @@ class RequestService(
             val cache = loadFromCache(url)
             if (cache != null) {
                 if (cancelSetImage.get().not()) {
-                    postUI {
-                        if (cancelSetImage.get()) return@postUI
-
-                        target?.setImageBitmap(cache)
-                        if (wrapHeight) wrapHeightTargetImage(cache)
-                    }
+                    targetView.setImageBitmap(cache)
                 }
 
                 if (loadIsCacheExist.not()) {
@@ -96,37 +85,27 @@ class RequestService(
             val bitmap = loadFromNet(url, cache == null)
             if (bitmap != null) {
                 if (cancelSetImage.get().not()) {
-                    postUI {
-                        if (cancelSetImage.get()) return@postUI
-
-                        target?.setImageBitmap(bitmap)
-                        if (wrapHeight) wrapHeightTargetImage(bitmap)
-                    }
+                    targetView.setImageBitmap(bitmap)
                 }
             }
             postUI { finishWork() }
         }
     }
 
-    @MainThread
-    private fun wrapHeightTargetImage(bitmap: Bitmap) {
-        val lp = target?.layoutParams ?: return
-        lp.height = (bitmap.height * lp.width) / bitmap.width
-        target?.requestLayout()
-    }
-
     private fun loadFromMemory(): Boolean {
-        val memoryBitmap = memoryCache[url]?.get()
-        if (memoryBitmap != null) {
-            if (cancelSetImage.get().not()) {
-                target?.setImageBitmap(memoryBitmap)
+        val memoryBitmap = memoryCache[url]?.get() ?: return false
+        // Seems like we don't need to load
+        if (cancelSetImage.get()) return true
+
+        launch {
+            targetView.setImageBitmap(memoryBitmap)
+            postUI {
                 if (cancelProgressListener.get().not()) progressListener?.onFinish()
                 finishWork()
             }
-            Log.d("Loading", "Memory $url")
-            return true
         }
-        return false
+
+        return true
     }
 
     private fun putToMemory(key: String, bitmap: Bitmap) {
@@ -211,11 +190,6 @@ class RequestService(
 
     private fun finishWork() {
         cancelRequest(false)
-    }
-
-    fun clearTarget() {
-        cancelSetImage.set(true)
-        targetView.clear()
     }
 
     fun clearProgressListener() {

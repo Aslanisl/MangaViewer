@@ -67,12 +67,7 @@ class ChapterActivity : BaseActivity() {
         chapterToolbar.navigationIcon = getDrawableCompat(R.drawable.ic_left_arrow)
         chapterToolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val lm = object : LinearLayoutManager(this, RecyclerView.VERTICAL, false) {
-            // Load more 2 items
-            override fun getExtraLayoutSpace(state: RecyclerView.State?): Int {
-                return 2
-            }
-        }
+        val lm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         chapterImages.layoutManager = lm
         chapterImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {

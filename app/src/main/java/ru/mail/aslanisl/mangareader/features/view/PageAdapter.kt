@@ -15,6 +15,7 @@ import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
 import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 import ru.mail.aslanisl.mangareader.utils.image.NetProgressListener
+import com.bumptech.glide.request.RequestListener as RequestListener1
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 

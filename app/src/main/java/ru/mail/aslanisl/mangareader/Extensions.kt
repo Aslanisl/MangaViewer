@@ -2,6 +2,7 @@ package ru.mail.aslanisl.mangareader
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.MediatorLiveData
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ru.mail.aslanisl.mangareader.data.base.UIData
+import kotlin.math.roundToInt
 
 fun <T> getLoadingLiveData(): MediatorLiveData<UIData<T>> {
     val liveData = MediatorLiveData<UIData<T>>()
@@ -91,3 +93,16 @@ fun <T> catch(defaultValue: T, block: () -> T): T {
 }
 
 fun Context.getDimensionPixel(@DimenRes id: Int) = catch(0) { resources.getDimensionPixelSize(id) }
+
+fun Bitmap.scaleDownToWidth(width: Int): Bitmap {
+    if (this.width < width) return this
+
+    val scaleFactor = this.width / width
+    return Bitmap.createScaledBitmap(this, width, (this.height.toFloat() / scaleFactor).roundToInt(), false)
+}
+
+fun Bitmap.scaleDownToMax(size: Int): Bitmap {
+    if (this.width <= size || this.height <= size) return this
+    val scaleFactor = Math.min(this.width.toFloat() / size, this.height.toFloat() / size)
+    return Bitmap.createScaledBitmap(this, (this.width / scaleFactor).toInt(), (this.height / scaleFactor).toInt(), false)
+}
