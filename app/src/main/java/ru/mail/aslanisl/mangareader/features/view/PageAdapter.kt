@@ -1,5 +1,6 @@
 package ru.mail.aslanisl.mangareader.features.view
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,15 +8,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.github.chrisbanes.photoview.PhotoView
+import com.github.piasy.biv.indicator.ProgressIndicator
+import com.github.piasy.biv.view.BigImageView
 import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
-import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 import ru.mail.aslanisl.mangareader.utils.image.NetProgressListener
-import com.bumptech.glide.request.RequestListener as RequestListener1
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 
@@ -41,7 +41,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
     override fun getItemCount() = images.size
 
     inner class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val imageView = itemView.findViewById<PhotoView>(R.id.image)
+        private val imageView = itemView.findViewById<BigImageView>(R.id.image)
         private val progressView = itemView.findViewById<ProgressBar>(R.id.progress)
 
         private val progressListener by lazy {
@@ -71,19 +71,41 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
             }
         }
 
-        init {
-            imageView.setOnPhotoTapListener { _, _, _ ->
-                tapListener?.invoke()
+        private val listener by lazy {
+            object : ProgressIndicator {
+                override fun onFinish() {
+                    imageView.show()
+                    progressView.gone()
+                }
+
+                override fun getView(parent: BigImageView?): View {
+                    return progressView
+                }
+
+                override fun onProgress(progress: Int) {
+                    progressView.progress = progress
+                }
+
+                override fun onStart() {
+                    imageView.gone()
+                    progressView.show()
+                }
             }
         }
 
+        init {
+            imageView.setOnClickListener { tapListener?.invoke() }
+            imageView.setProgressIndicator(listener)
+        }
+
         fun init(image: Page) {
-            ImageLoader
-                .request()
-                .url(image.imageUrl)
-                .progressListener(progressListener)
-                .wrapHeight(true)
-                .target(imageView)
+            imageView.showImage(Uri.parse(image.imageUrl))
+//            ImageLoader
+//                .request()
+//                .url(image.imageUrl)
+//                .progressListener(progressListener)
+//                .wrapHeight(true)
+//                .target(imageView)
         }
     }
 }

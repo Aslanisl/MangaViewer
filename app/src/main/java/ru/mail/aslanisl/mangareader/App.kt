@@ -1,6 +1,8 @@
 package ru.mail.aslanisl.mangareader
 
 import android.app.Application
+import com.github.piasy.biv.BigImageViewer
+import com.github.piasy.biv.loader.glide.GlideImageLoader
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -49,5 +51,7 @@ class App : Application() {
             androidContext(this@App)
             modules(appModule)
         }
+
+        BigImageViewer.initialize(GlideImageLoader.with(this));
     }
 }

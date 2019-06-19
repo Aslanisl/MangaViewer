@@ -67,4 +67,9 @@ dependencies {
     implementation 'com.jakewharton:disklrucache:2.0.2'
 
     implementation 'org.jsoup:jsoup:1.11.3'
+
+    implementation ('com.github.piasy:GlideImageLoader:1.5.7') {
+        transitive = true
+        exclude module: 'GlideImageLoader'
+    }
 }
