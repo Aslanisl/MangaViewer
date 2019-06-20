@@ -20,6 +20,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.MediatorLiveData
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ru.mail.aslanisl.mangareader.data.base.UIData
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
 import kotlin.math.roundToInt
 
 fun <T> getLoadingLiveData(): MediatorLiveData<UIData<T>> {
@@ -105,4 +108,13 @@ fun Bitmap.scaleDownToMax(size: Int): Bitmap {
     if (this.width <= size || this.height <= size) return this
     val scaleFactor = Math.min(this.width.toFloat() / size, this.height.toFloat() / size)
     return Bitmap.createScaledBitmap(this, (this.width / scaleFactor).toInt(), (this.height / scaleFactor).toInt(), false)
+}
+
+fun Context.readStringAssets(name: String): String {
+    return try {
+        val inputStream: InputStream = assets.open(name)
+        inputStream.bufferedReader().use { it.readText() }
+    } catch (e: Exception) {
+        ""
+    }
 }

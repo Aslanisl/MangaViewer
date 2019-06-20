@@ -1,9 +1,9 @@
 package ru.mail.aslanisl.mangareader.features.view
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +15,7 @@ import ru.mail.aslanisl.mangareader.data.model.Page
 import ru.mail.aslanisl.mangareader.features.view.PageAdapter.ImageViewHolder
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.show
+import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 import ru.mail.aslanisl.mangareader.utils.image.NetProgressListener
 
 class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
@@ -41,7 +42,7 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
     override fun getItemCount() = images.size
 
     inner class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val imageView = itemView.findViewById<BigImageView>(R.id.image)
+        private val imageView = itemView.findViewById<ImageView>(R.id.image)
         private val progressView = itemView.findViewById<ProgressBar>(R.id.progress)
 
         private val progressListener by lazy {
@@ -95,17 +96,17 @@ class PageAdapter : RecyclerView.Adapter<ImageViewHolder>() {
 
         init {
             imageView.setOnClickListener { tapListener?.invoke() }
-            imageView.setProgressIndicator(listener)
+//            imageView.setProgressIndicator(listener)
         }
 
         fun init(image: Page) {
-            imageView.showImage(Uri.parse(image.imageUrl))
-//            ImageLoader
-//                .request()
-//                .url(image.imageUrl)
-//                .progressListener(progressListener)
-//                .wrapHeight(true)
-//                .target(imageView)
+//            imageView.showImage(Uri.parse(image.imageUrl))
+            ImageLoader
+                .request()
+                .url(image.imageUrl)
+                .progressListener(progressListener)
+                .wrapHeight(true)
+                .target(imageView)
         }
     }
 }

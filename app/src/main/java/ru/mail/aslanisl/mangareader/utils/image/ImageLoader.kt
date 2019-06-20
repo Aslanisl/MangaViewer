@@ -31,8 +31,8 @@ object ImageLoader : KoinComponent, CoroutineScope {
         }
     }
 
-    fun loadImagesCache(urls: List<String>) {
-        // TODO add implementation
+    fun loadImages(urls: List<String>, imagesListener: ImagesListener) {
+
     }
 
     fun request() = RequestBuilder(this)

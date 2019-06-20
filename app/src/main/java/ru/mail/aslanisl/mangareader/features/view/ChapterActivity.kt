@@ -2,15 +2,10 @@ package ru.mail.aslanisl.mangareader.features.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.View
+import android.webkit.WebSettings
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_chapter.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.mail.aslanisl.mangareader.R
@@ -20,14 +15,15 @@ import ru.mail.aslanisl.mangareader.features.base.BaseActivity
 import ru.mail.aslanisl.mangareader.getDrawableCompat
 import ru.mail.aslanisl.mangareader.gone
 import ru.mail.aslanisl.mangareader.isVisible
+import ru.mail.aslanisl.mangareader.readStringAssets
 import ru.mail.aslanisl.mangareader.show
 
 private const val KEY_CHAPTER = "KEY_CHAPTER"
 private const val UI_ANIMATION_DURATION = 300L
 
-class ChapterActivity : BaseActivity() {
+private const val KEY_IMAGES = "{IMAGES}"
 
-    private val adapter by lazy { PageAdapter() }
+class ChapterActivity : BaseActivity() {
 
     private val viewModel: ChapterViewModel by viewModel()
     private val observer by lazy {
@@ -45,7 +41,7 @@ class ChapterActivity : BaseActivity() {
         }
     }
 
-    private var pageCount = 0
+    private var animating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,66 +63,19 @@ class ChapterActivity : BaseActivity() {
         chapterToolbar.navigationIcon = getDrawableCompat(R.drawable.ic_left_arrow)
         chapterToolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val lm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        chapterImages.layoutManager = lm
-        chapterImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
-                    return
-                }
-                val firstVisible = lm.findFirstCompletelyVisibleItemPosition()
-                if (firstVisible == RecyclerView.NO_POSITION) {
-                    return
-                }
-                updateToolbarTitle(firstVisible + 1)
-            }
-        })
-//        val snapHelper = PagerSnapHelper()
-//        snapHelper.attachToRecyclerView(chapterImages)
-        chapterImages.adapter = adapter
+        webView.setOnClickListener { toggleUI() }
+        webView.settings.domStorageEnabled = true
 
-        adapter.tapListener = { toggleUI() }
-
-//        previous.setOnClickListener(::previous)
-//        next.setOnClickListener(::next)
-    }
-
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-//        return when (keyCode) {
-//            KeyEvent.KEYCODE_VOLUME_DOWN -> {
-//                previous()
-//                true
-//            }
-//
-//            KeyEvent.KEYCODE_VOLUME_UP -> {
-//                next()
-//                true
-//            }
-//
-//            else -> super.onKeyDown(keyCode, event)
-//        }
-//    }
-
-    private fun next(view: View? = null) {
-        val lm = chapterImages.layoutManager as LinearLayoutManager
-        val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-        if (currentPosition < 0) return
-        if (currentPosition + 1 >= adapter.itemCount) {
-            setResult(Activity.RESULT_OK)
-            finish()
-            return
+        val dir = cacheDir
+        if (!dir.exists()) {
+            dir.mkdirs()
         }
-        chapterImages.smoothScrollToPosition(currentPosition + 1)
-    }
+        webView.settings.setAppCachePath(dir.path)
+        webView.settings.allowFileAccess = true
+        webView.settings.setAppCacheEnabled(true)
 
-    private fun previous(view: View? = null) {
-        val lm = chapterImages.layoutManager as LinearLayoutManager
-        val currentPosition = lm.findFirstCompletelyVisibleItemPosition()
-        if (currentPosition <= 0) return
-        chapterImages.smoothScrollToPosition(currentPosition - 1)
+        webView.settings.cacheMode = WebSettings.LOAD_DEFAULT
     }
-
-    private var animating = false
 
     private fun toggleUI() {
         if (animating) return
@@ -160,12 +109,13 @@ class ChapterActivity : BaseActivity() {
     }
 
     private fun showPages(pages: List<Page>) {
-        adapter.updatePages(pages)
-        pageCount = pages.size
-        updateToolbarTitle(1)
-    }
+        var imgElements = ""
 
-    private fun updateToolbarTitle(currentPosition: Int) {
-        chapterToolbar.title = "$currentPosition/$pageCount"
+        pages.forEach {
+            imgElements += "<img src='" + it.imageUrl + "'/>"
+        }
+        val html = readStringAssets("Pages.html").replace(KEY_IMAGES, imgElements)
+
+        webView.loadData(html, "text/html; charset=utf-8", "UTF-8");
     }
 }

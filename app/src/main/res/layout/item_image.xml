@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.github.piasy.biv.view.BigImageView
+    <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optimizeDisplay="false" />
+        android:layout_height="350dp" />
 
     <ProgressBar
         android:id="@+id/progress"

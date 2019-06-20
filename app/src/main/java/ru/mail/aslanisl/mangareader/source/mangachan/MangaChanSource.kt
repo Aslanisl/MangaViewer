@@ -17,7 +17,7 @@ import ru.mail.aslanisl.mangareader.source.MangaFilter.FAVORITE
 import ru.mail.aslanisl.mangareader.source.MangaFilter.NAME
 import ru.mail.aslanisl.mangareader.source.MangaFilter.NONE
 
-private const val BASE_URL = "https://mangachan.me/"
+private const val BASE_URL = "https://manga-chan.me/"
 private const val PAGINATION_COUNT = 20
 
 class MangaChanSource : IMangaSource {
