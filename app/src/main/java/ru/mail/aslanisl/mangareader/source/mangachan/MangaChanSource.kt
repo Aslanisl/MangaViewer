@@ -1,6 +1,7 @@
 package ru.mail.aslanisl.mangareader.source.mangachan
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.data.model.Chapter
@@ -22,16 +23,59 @@ private const val PAGINATION_COUNT = 20
 
 class MangaChanSource : IMangaSource {
 
+    private val defaultGenres = listOf(
+        "комедия",
+        "приключения",
+        "боевик"
+    )
+
+    private val elemetsAttributesGenres = listOf(
+        "title",
+        "value"
+    )
+
     private val api by lazy { ApiBuilder().createRetrofit(BASE_URL).create(MangaChanApi::class.java) }
 
     override suspend fun loadGenres(): UIData<List<Genre>> {
-        val result = api.request("https://mangachan.me/tags/").await()
+        val result = api.request(BASE_URL).await()
         if (result.isSuccess().not()) {
             return UIData.errorThrowable(result.throwable)
         }
         val genres = mutableListOf<Genre>()
         try {
             val doc = Jsoup.parse(result.body)
+
+            val genresElements = mutableMapOf<String, List<Element>>()
+            defaultGenres.forEach { genre ->
+                val genreMatchElements = mutableListOf<Element>()
+
+                elemetsAttributesGenres.forEach {
+                    val elements = doc.getElementsByAttributeValue(it, genre)
+                    genreMatchElements += elements
+                }
+                genresElements[genre] = genreMatchElements
+            }
+            var genreParents = mutableListOf<Element>()
+            genresElements.forEach {
+                it.value.forEach { element ->
+                    element.parent()?.let { genreParents.add(it) }
+                }
+            }
+            genreParents = genreParents.distinct().toMutableList()
+
+            val iterator = genreParents.iterator()
+            while (iterator.hasNext()) {
+                val parent = iterator.next()
+                var sameParent = true
+                genresElements.forEach {
+                    val elements = it.value
+                    sameParent = elements.any { it.parent() != null && it.parent() == parent }
+                }
+                if (sameParent.not()) {
+                    iterator.remove()
+                }
+            }
+
             val news = doc.getElementsByClass("news")[0]
             news.children().forEach {
                 val href = it.attr("href")
