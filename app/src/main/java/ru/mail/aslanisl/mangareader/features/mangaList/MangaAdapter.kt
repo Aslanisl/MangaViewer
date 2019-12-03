@@ -6,12 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.mail.aslanisl.mangareader.R.id
-import ru.mail.aslanisl.mangareader.R.layout
+import com.bumptech.glide.Glide
+import ru.mail.aslanisl.mangareader.R
 import ru.mail.aslanisl.mangareader.data.model.Manga
 import ru.mail.aslanisl.mangareader.features.base.loadingAdapter.LoadingRecyclerAdapter
 import ru.mail.aslanisl.mangareader.features.mangaList.MangaAdapter.MangaViewHolder
-import ru.mail.aslanisl.mangareader.utils.image.ImageLoader
 
 class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
 
@@ -20,7 +19,7 @@ class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
     }
 
     override fun onCreateItemViewHolder(parent: ViewGroup, viewType: Int): MangaViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(layout.item_manga, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_manga, parent, false)
         return MangaViewHolder(view)
     }
 
@@ -31,9 +30,9 @@ class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
     var listener: ((Manga) -> Unit)? = null
 
     inner class MangaViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val photo = itemView.findViewById<ImageView>(id.mangaPhoto)
-        private val name = itemView.findViewById<TextView>(id.mangaName)
-        private val description = itemView.findViewById<TextView>(id.mangaDescription)
+        private val photo = itemView.findViewById<ImageView>(R.id.mangaPhoto)
+        private val name = itemView.findViewById<TextView>(R.id.mangaName)
+        private val description = itemView.findViewById<TextView>(R.id.mangaDescription)
 
         private var currentManga: Manga? = null
 
@@ -46,7 +45,7 @@ class MangaAdapter : LoadingRecyclerAdapter<Manga, MangaViewHolder>() {
 
         fun init(manga: Manga) {
             currentManga = manga
-            ImageLoader.request().url(manga.photoUrl).target(photo)
+            Glide.with(itemView).load(manga.photoUrl).into(photo)
             name.text = manga.name
             description.text = manga.description
         }

@@ -1,7 +1,6 @@
 package ru.mail.aslanisl.mangareader.source.mangachan
 
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 import ru.mail.aslanisl.mangareader.data.base.UIData
 import ru.mail.aslanisl.mangareader.data.model.Chapter
@@ -28,12 +27,6 @@ class MangaChanSource : IMangaSource {
         "приключения",
         "боевик"
     )
-
-    private val elemetsAttributesGenres = listOf(
-        "title",
-        "value"
-    )
-
     private val api by lazy { ApiBuilder().createRetrofit(BASE_URL).create(MangaChanApi::class.java) }
 
     override suspend fun loadGenres(): UIData<List<Genre>> {
@@ -45,45 +38,45 @@ class MangaChanSource : IMangaSource {
         try {
             val doc = Jsoup.parse(result.body)
 
-            val genresElements = mutableMapOf<String, List<Element>>()
+//            val genreElementsMap = mutableMapOf<String, List<Element>>()
+            val allElements = doc.allElements
+            var className = ""
             defaultGenres.forEach { genre ->
-                val genreMatchElements = mutableListOf<Element>()
-
-                elemetsAttributesGenres.forEach {
-                    val elements = doc.getElementsByAttributeValue(it, genre)
-                    genreMatchElements += elements
+                //                val genreList = mutableListOf<Element>()
+                allElements.forEach { element ->
+                    if (element.ownText().contains(genre) && element.hasAttr("href") && element.parent().className().isNotEmpty()) {
+                        className = element.parent().className()
+                    }
                 }
-                genresElements[genre] = genreMatchElements
+//                genreElementsMap[genre] = genreList
             }
-            var genreParents = mutableListOf<Element>()
-            genresElements.forEach {
-                it.value.forEach { element ->
-                    element.parent()?.let { genreParents.add(it) }
-                }
-            }
-            genreParents = genreParents.distinct().toMutableList()
+//            val sameParentElements = mutableListOf<Element>()
+//            val firstKey = genreElementsMap.keys.first()
+//            genreElementsMap[firstKey]?.forEach { firstElement ->
+//                var sameParent = true
+//                genreElementsMap.forEach { entry ->
+//                    if (entry.key != firstKey) {
+//                        sameParent = entry.value.any { it.parent() != null && it.parent() == firstElement.parent() }
+//                    }
+//                }
+//                if (sameParent) {
+//                    sameParentElements.add(firstElement)
+//                }
+//            }
+//                sameParentElements.forEachIndexed { index, element ->
+//                    Log.d("TAGLOG", "$index ${element.parent().className()}")
+//                }
 
-            val iterator = genreParents.iterator()
-            while (iterator.hasNext()) {
-                val parent = iterator.next()
-                var sameParent = true
-                genresElements.forEach {
-                    val elements = it.value
-                    sameParent = elements.any { it.parent() != null && it.parent() == parent }
-                }
-                if (sameParent.not()) {
-                    iterator.remove()
-                }
-            }
-
-            val news = doc.getElementsByClass("news")[0]
-            news.children().forEach {
+//            val parent = sameParentElements.getOrNull(0)?.parent()!!
+            val sameParentClasses = doc.getElementsByClass(className)
+            sameParentClasses.flatMap { it.children() }.filter { it.attr("href").isNotEmpty() && it.text().isNotEmpty() }.forEach {
                 val href = it.attr("href")
                 val title = it.text()?.replace("_", " ")
-                if (href.isNullOrEmpty().not() && title.isNullOrEmpty().not()) {
+                if (href.isNullOrEmpty().not() && title.isNullOrEmpty().not() && title != "-" && title != "+") {
                     genres.add(Genre(href, title!!))
                 }
             }
+
             return UIData.success(genres)
         } catch (e: Exception) {
             if (genres.isEmpty().not()) {
@@ -94,7 +87,7 @@ class MangaChanSource : IMangaSource {
     }
 
     override suspend fun loadMangaGenre(genreId: String, filter: MangaFilter): UIData<List<Manga>> {
-        val result = api.request(genreId.dropLast(1) + resolveFilter(filter)).await()
+        val result = api.request(genreId + resolveFilter(filter)).await()
         if (result.isSuccess().not()) {
             return UIData.errorThrowable(result.throwable)
         }
